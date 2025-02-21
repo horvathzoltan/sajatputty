@@ -167,14 +167,17 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 
 void MainWindow::saveSession()
 {
+
     logfn = QFileDialog::getSaveFileName(this, tr("Save File"), "/home/pi/terminal_logs", tr(""));
     if(logfn.isNull() || logfn.isEmpty()) return;
-    logf = new QFile(logfn);
-    logf->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    logts = new QTextStream(logf);
-    *logts<<"Port name; Baud rate; Data bits; Parity bits; Stop bits; Flow control\n";
+    QFile logf(logfn);
+    logf.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+    //logts = new QTextStream(logf);
+
+    QTextStream logts(&logf);
+    logts<<"Port name; Baud rate; Data bits; Parity bits; Stop bits; Flow control\n";
     //QString baudRate = EnumHelper::ToString(m_serial->baudRate());
-    *logts<<m_serial->portName()<<";"
+    logts<<m_serial->portName()<<";"
            << QString::number(m_serial->baudRate())<<";"
            << EnumHelper::ToString(m_serial->dataBits())<<";"
            << EnumHelper::ToString(m_serial->parity())<<";"
@@ -188,22 +191,22 @@ void MainWindow::saveSession()
     //        << EnumHelper::getFlowControl(m_serial->flowControl())<<"\n";
     for(int i = 0; i < logd.length(); i++){
         auto s = logd.at(i).wr==1?"TX":"RX";
-        *logts<<logd.at(i).timestamp.toString("yyyy.mm.dd@HH.mm.ss")<<" "<<s<<" "<<logd.at(i).data<<"\n";
+        logts<<logd.at(i).timestamp.toString("yyyy.mm.dd@HH.mm.ss")<<" "<<s<<" "<<logd.at(i).data<<"\n";
     }
-    logf2 = new QFile(logfn+".txt");
-    logf2->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    logts->setDevice(logf2);
-    *logts<<m_console->toPlainText();
-    logf->close();
-    logf2->close();
+    QFile logf2(logfn+".txt");
+    logf2.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+    logts.setDevice(&logf2);
+    logts<<m_console->toPlainText();
+    logf.close();
+    logf2.close();
     saveSettings();
 }
 
-void MainWindow::loadSession()
-{
-    settingsFn = QFileDialog::getOpenFileName(this, tr("Load Setting"), "/home/pi/terminal_settings", tr(""));
-    loadSettings();
-}
+// void MainWindow::loadSession()
+// {
+//     settingsFn = QFileDialog::getOpenFileName(this, tr("Load Setting"), "/home/pi/terminal_settings", tr(""));
+//     loadSettings();
+// }
 
 void MainWindow::clear()
 {

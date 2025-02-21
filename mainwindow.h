@@ -104,7 +104,7 @@ private slots:
     void writeData(const QByteArray &data);
     void readData();
     void saveSession();
-    void loadSession();
+    //void loadSession();
     void clear();
 
     void handleError(QSerialPort::SerialPortError error);
@@ -124,9 +124,9 @@ private:
 
     QString settingsFn;
     QString logfn;
-    QFile *logf = nullptr;
-    QFile *logf2 = nullptr;
-    QTextStream *logts = nullptr;
+    //QFile *logf = nullptr;
+    //QFile *logf2 = nullptr;
+    //QTextStream *logts = nullptr;
     QList<struct logData> logd;// = nullptr;
 };
 
