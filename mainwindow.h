@@ -52,12 +52,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "session.h"
+//#include "helpers/serialsettingshelper.h"
+
 #include <QFile>
 #include <QMainWindow>
 #include <QSerialPort>
 #include <QTextStream>
 #include <QDateTime>
-#include <QSettings>
+#include "console.h"
 
 #define PRG_NAME        "oled_demo"
 #define PRG_VERSION     "1.1"
@@ -83,12 +86,6 @@ QT_END_NAMESPACE
 class Console;
 class SettingsDialog;
 
-struct logData{
-    QDateTime timestamp;
-    int wr;
-    QByteArray data;
-};
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -103,31 +100,44 @@ private slots:
     void about();
     void writeData(const QByteArray &data);
     void readData();
+    void saveSettings();
+    void loadSettings();
     void saveSession();
-    //void loadSession();
+    void loadSession();
     void clear();
 
     void handleError(QSerialPort::SerialPortError error);
 
+    void process_ActionConfigure();
+    void process_ActionClear();
+    void process_OpenSerialPort();
+    void process_CloseSerialPort();
+    void process_Close();
+    void process_About();
+    void process_AboutQt();
+
+    void process_Apply();
+
 private:
     void initActionsConnections();
     void showStatusMessage(const QString &message);
-    void loadSettings();
-    void saveSettings();
 
 private:
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
-    Console *m_console = nullptr;
-    SettingsDialog *m_settings = nullptr;
-    QSerialPort *m_serial = nullptr;
+    Console *_console = nullptr;
+    SettingsDialog* _settingsDialog = nullptr;
+    QSerialPort *_serial = nullptr;
+    SessionLog _sessionLog;
 
-    QString settingsFn;
-    QString logfn;
-    //QFile *logf = nullptr;
-    //QFile *logf2 = nullptr;
-    //QTextStream *logts = nullptr;
-    QList<struct logData> logd;// = nullptr;
+    void SetSettingsDialog();
+public:
+    QSerialPort* mSerial(){ return _serial; }
+    void setLocalEcho(bool v)
+    {
+        if(!_console) return;
+        _console->setLocalEcho(v);
+    };
 };
 
 #endif // MAINWINDOW_H

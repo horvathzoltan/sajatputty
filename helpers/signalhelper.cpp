@@ -2,11 +2,12 @@
 
 #include <QString>
 #include <QCoreApplication>
-#include "helpers/logger.h"
+#include <QDebug>
 
 void SignalHelper::handleShutDownSignal( int signalId )
 {
-    zInfo(QStringLiteral("EXIT: %1").arg(signalId));
+    QString a = QStringLiteral("EXIT: %1").arg(signalId);
+    qDebug()<<a;
     QCoreApplication::exit(0);
 }
 

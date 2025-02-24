@@ -61,14 +61,30 @@ Console::Console(QWidget *parent) :
     p.setColor(QPalette::Base, Qt::black);
     p.setColor(QPalette::Text, Qt::green);
     setPalette(p);
+
+    QScrollBar *bar = verticalScrollBar();
+    bar->setEnabled(true);
+    // bar->setDisabled(false);
+    //setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
+    setTextInteractionFlags(Qt::TextBrowserInteraction);
+
 }
+
 
 void Console::putData(const QByteArray &data)
 {
     insertPlainText(data);
 
-    QScrollBar *bar = verticalScrollBar();
+    QScrollBar *bar = verticalScrollBar();        
     bar->setValue(bar->maximum());
+
+    //QScrollBar *bar = verticalScrollBar();
+    //bar->setEnabled(true);
+
+    //bar->setEnabled(true);
+
+ //   QMetaObject::invokeMethod(bar, "setValue", Qt::QueuedConnection, Q_ARG(int, bar->maximum()));
+
 }
 
 void Console::setLocalEchoEnabled(bool set)
@@ -86,8 +102,7 @@ void Console::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Down:
         break;
     default:
-        if (m_localEchoEnabled)
-            QPlainTextEdit::keyPressEvent(e);
+
         emit getData(e->text().toLocal8Bit());
     }
 }
