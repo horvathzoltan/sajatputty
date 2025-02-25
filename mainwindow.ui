@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>800</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,8 +25,15 @@
    </attribute>
    <addaction name="actionConnect"/>
    <addaction name="actionDisconnect"/>
+   <addaction name="separator"/>
    <addaction name="actionConfigure"/>
+   <addaction name="actionLoadSettings"/>
+   <addaction name="actionSaveSettings"/>
+   <addaction name="separator"/>
    <addaction name="actionClear"/>
+   <addaction name="actionLoadSession"/>
+   <addaction name="actionSaveSession"/>
+   <addaction name="separator"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout">
@@ -115,6 +122,66 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionLoadSession">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/load.png</normaloff>:/images/load.png</iconset>
+   </property>
+   <property name="text">
+    <string>LoadSession</string>
+   </property>
+   <property name="toolTip">
+    <string>Load session</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionSaveSession">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>SaveSession</string>
+   </property>
+   <property name="toolTip">
+    <string>Save session</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionLoadSettings">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/load.png</normaloff>:/images/load.png</iconset>
+   </property>
+   <property name="text">
+    <string>LoadSettings</string>
+   </property>
+   <property name="toolTip">
+    <string>Load settings</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionSaveSettings">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>SaveSettings</string>
+   </property>
+   <property name="toolTip">
+    <string>Save settings</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
  </widget>

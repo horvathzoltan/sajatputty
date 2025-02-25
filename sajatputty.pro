@@ -9,28 +9,38 @@ DEFINES += TARGI=$$TARGET
 message( "TARGET = "$$TARGET )
 
 SOURCES += \
-    buildnumber.cpp \
-    enumhelper.cpp \
-    globals.cpp \
+    helpers/enumhelper.cpp \
+    helpers/fileerrors.cpp \
+    helpers/filenamehelper.cpp \
+    helpers/serialsettingshelper.cpp \
+    helpers/signalhelper.cpp \
+    helpers/sysinfohelper.cpp \
+    helpers/textfilehelper.cpp \
+    infrastructure/buildnumber.cpp \
+    infrastructure/globals.cpp \
     main.cpp \
     mainwindow.cpp \
+    session.cpp \
     settingsdialog.cpp \
-    console.cpp \
- \    #ssd1306.cpp
-    signalhelper.cpp \
-    sysinfohelper.cpp
+    console.cpp
+     #ssd1306.cpp
 
 HEADERS += \
-    buildnumber.h \
-    enumhelper.h \
-    globals.h \
+    helpers/enumhelper.h \
+    helpers/fileerrors.h \
+    helpers/filenamehelper.h \
+    helpers/serialsettingshelper.h \
+    helpers/signalhelper.h \
+    helpers/stringify.h \
+    helpers/sysinfohelper.h \
+    helpers/textfilehelper.h \
+    infrastructure/buildnumber.h \
+    infrastructure/globals.h \
     mainwindow.h \
+    session.h \
     settingsdialog.h \
-    console.h \
- \    #ssd1306.h
-    signalhelper.h \
-    stringify.h \
-    sysinfohelper.h
+    console.h
+     #ssd1306.h
 
 FORMS += \
     mainwindow.ui \
@@ -40,6 +50,19 @@ RESOURCES += \
     terminal.qrc
 
 INSTALLS += target
+
+contains(QMAKESPEC,.*linux-rasp-pi\d*-.*){
+    message(rpi)
+    CONFIG += rpi
+    DEFINES += RASPBERRY_PI
+}
+
+unix:rpi:{
+message(LIBS added for raspberry_pi)
+#LIBS += -lwiringPi
+#LIBS += -lnfc -lpthread
+#LIBS += -lusb-1.0
+}
 
 #LIBS+= -lwiringPi
 

@@ -30,6 +30,10 @@ public:
     QAction *actionConfigure;
     QAction *actionClear;
     QAction *actionQuit;
+    QAction *actionLoadSession;
+    QAction *actionSaveSession;
+    QAction *actionLoadSettings;
+    QAction *actionSaveSettings;
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     QToolBar *mainToolBar;
@@ -39,7 +43,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(400, 300);
+        MainWindow->resize(800, 600);
         actionAbout = new QAction(MainWindow);
         actionAbout->setObjectName(QString::fromUtf8("actionAbout"));
         actionAboutQt = new QAction(MainWindow);
@@ -69,6 +73,26 @@ public:
         QIcon icon4;
         icon4.addFile(QString::fromUtf8(":/images/application-exit.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionQuit->setIcon(icon4);
+        actionLoadSession = new QAction(MainWindow);
+        actionLoadSession->setObjectName(QString::fromUtf8("actionLoadSession"));
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/images/load.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionLoadSession->setIcon(icon5);
+        actionLoadSession->setMenuRole(QAction::TextHeuristicRole);
+        actionSaveSession = new QAction(MainWindow);
+        actionSaveSession->setObjectName(QString::fromUtf8("actionSaveSession"));
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/images/save.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionSaveSession->setIcon(icon6);
+        actionSaveSession->setMenuRole(QAction::TextHeuristicRole);
+        actionLoadSettings = new QAction(MainWindow);
+        actionLoadSettings->setObjectName(QString::fromUtf8("actionLoadSettings"));
+        actionLoadSettings->setIcon(icon5);
+        actionLoadSettings->setMenuRole(QAction::TextHeuristicRole);
+        actionSaveSettings = new QAction(MainWindow);
+        actionSaveSettings->setObjectName(QString::fromUtf8("actionSaveSettings"));
+        actionSaveSettings->setIcon(icon6);
+        actionSaveSettings->setMenuRole(QAction::TextHeuristicRole);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         verticalLayout = new QVBoxLayout(centralWidget);
@@ -85,8 +109,15 @@ public:
 
         mainToolBar->addAction(actionConnect);
         mainToolBar->addAction(actionDisconnect);
+        mainToolBar->addSeparator();
         mainToolBar->addAction(actionConfigure);
+        mainToolBar->addAction(actionLoadSettings);
+        mainToolBar->addAction(actionSaveSettings);
+        mainToolBar->addSeparator();
         mainToolBar->addAction(actionClear);
+        mainToolBar->addAction(actionLoadSession);
+        mainToolBar->addAction(actionSaveSession);
+        mainToolBar->addSeparator();
 
         retranslateUi(MainWindow);
 
@@ -136,6 +167,22 @@ public:
 #if QT_CONFIG(shortcut)
         actionQuit->setShortcut(QCoreApplication::translate("MainWindow", "Ctrl+Q", nullptr));
 #endif // QT_CONFIG(shortcut)
+        actionLoadSession->setText(QCoreApplication::translate("MainWindow", "LoadSession", nullptr));
+#if QT_CONFIG(tooltip)
+        actionLoadSession->setToolTip(QCoreApplication::translate("MainWindow", "Load session", nullptr));
+#endif // QT_CONFIG(tooltip)
+        actionSaveSession->setText(QCoreApplication::translate("MainWindow", "SaveSession", nullptr));
+#if QT_CONFIG(tooltip)
+        actionSaveSession->setToolTip(QCoreApplication::translate("MainWindow", "Save session", nullptr));
+#endif // QT_CONFIG(tooltip)
+        actionLoadSettings->setText(QCoreApplication::translate("MainWindow", "LoadSettings", nullptr));
+#if QT_CONFIG(tooltip)
+        actionLoadSettings->setToolTip(QCoreApplication::translate("MainWindow", "Load settings", nullptr));
+#endif // QT_CONFIG(tooltip)
+        actionSaveSettings->setText(QCoreApplication::translate("MainWindow", "SaveSettings", nullptr));
+#if QT_CONFIG(tooltip)
+        actionSaveSettings->setToolTip(QCoreApplication::translate("MainWindow", "Save settings", nullptr));
+#endif // QT_CONFIG(tooltip)
     } // retranslateUi
 
 };

@@ -1,12 +1,15 @@
 #include <QApplication>
 #include <QDebug>
 
-#include "mainwindow.h"
-#include "buildnumber.h"
-#include "stringify.h"
-#include "signalhelper.h"
+#include <helpers/filenamehelper.h>
+#include <helpers/serialsettingshelper.h>
 
-#include "globals.h"
+#include "mainwindow.h"
+#include "infrastructure/buildnumber.h"
+#include "helpers/stringify.h"
+#include "helpers/signalhelper.h"
+
+#include "infrastructure/globals.h"
 
 Globals _globals;
 
@@ -33,10 +36,20 @@ int main(int argc, char *argv[])
     QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
     qDebug()<<sysInfo;
 
-    auto homePath = _globals.homePath();
-    qDebug()<<"homePath:"<<homePath;
+    // ha nincs meg a terminal mappa, akkor letrehozzuk
+    if(!FileNameHelper::IsDirExists(FileNameHelper::terminalDirPath()))
+    {
+        QDir().mkdir(FileNameHelper::terminalDirPath());
+    }
 
     MainWindow w;
+    bool localEcho;
+    SerialSettingsHelper::loadSettings(FileNameHelper::settingsPath(), w.mSerial(), &localEcho);
+    w.setLocalEcho(localEcho);
+
     w.show();
-    return a.exec();
+    int r =  a.exec();
+
+    //SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), w.mSerial());
+    return r;
 }

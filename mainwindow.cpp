@@ -53,25 +53,34 @@
 #include "ui_mainwindow.h"
 #include "console.h"
 #include "settingsdialog.h"
-#include "enumhelper.h"
+//#include "enumhelper.h"
+//#include "enumhelper.h"
+//#include "session.h"
 
 #include <QDateTime>
 #include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
 
+#include "infrastructure/globals.h"
+#include <helpers/filenamehelper.h>
+
+#include <helpers/serialsettingshelper.h>
+
+extern Globals _globals;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::MainWindow),
     m_status(new QLabel),
-    m_console(new Console),
-    m_settings(new SettingsDialog),
-    m_serial(new QSerialPort(this))
+    _console(new Console),
+    _settingsDialog(new SettingsDialog),
+    _serial(new QSerialPort(this))
 {
     m_ui->setupUi(this);
     m_ui->mainToolBar->setIconSize(QSize(80, 80));
-    m_console->setEnabled(false);
-    setCentralWidget(m_console);
+    _console->setEnabled(true);
+    setCentralWidget(_console);
 
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
@@ -82,51 +91,152 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initActionsConnections();
 
-    connect(m_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
-    connect(m_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
-    connect(m_console, &Console::getData, this, &MainWindow::writeData);
-    loadSettings();
+    connect(_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
+    connect(_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
+    connect(_console, &Console::getData, this, &MainWindow::writeData);
+
+    connect(_settingsDialog, &SettingsDialog::apply, this, &MainWindow::process_Apply);
+    //SetSettingsDialog();
 }
+
+/*
+*
+*/
+
+void MainWindow::initActionsConnections()
+{
+    /*connection*/
+    connect(m_ui->actionConnect, &QAction::triggered, this, &MainWindow::process_OpenSerialPort);
+    connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::process_CloseSerialPort);
+    /*settings*/
+    connect(m_ui->actionConfigure, &QAction::triggered, this, &MainWindow::process_ActionConfigure);
+    connect(m_ui->actionLoadSettings, &QAction::triggered, this, &MainWindow::loadSettings);
+    connect(m_ui->actionSaveSettings, &QAction::triggered, this, &MainWindow::saveSettings);
+    /*session*/
+    connect(m_ui->actionClear, &QAction::triggered, this, &MainWindow::process_ActionClear);
+    connect(m_ui->actionSaveSession, &QAction::triggered, this, &MainWindow::saveSession);
+    connect(m_ui->actionLoadSession, &QAction::triggered, this, &MainWindow::loadSession);
+    /*help / about*/
+    connect(m_ui->actionAbout, &QAction::triggered, this, &MainWindow::process_About);
+    connect(m_ui->actionAboutQt, &QAction::triggered, this, &MainWindow::process_AboutQt);
+    /*app*/
+    connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::process_Close);
+}
+
+void MainWindow::process_ActionConfigure()
+{
+    _settingsDialog->show();
+}
+
+void MainWindow::process_ActionClear()
+{
+    _console->clear();
+    clear();
+}
+
+void MainWindow::process_OpenSerialPort()
+{
+    openSerialPort();
+}
+
+void MainWindow::process_CloseSerialPort()
+{
+    closeSerialPort();
+}
+
+void MainWindow::process_Close()
+{
+    close();
+}
+
+void MainWindow::process_About()
+{
+    about();
+}
+
+void MainWindow::process_AboutQt()
+{
+    QApplication::aboutQt();
+}
+
+/*
+*
+*/
+
+void MainWindow::process_Apply()
+{
+    SettingsDialog::SettingsVM p = _settingsDialog->settings();
+    _serial->setPortName(p.portName);
+    _serial->setBaudRate(p.baudRate);
+    _serial->setDataBits(p.dataBits);
+    _serial->setParity(p.parity);
+    _serial->setStopBits(p.stopBits);
+    _serial->setFlowControl(p.flowControl);
+
+    _console->setLocalEcho(p.localEchoEnabled);
+
+    SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), _serial, _console->localEcho());
+}
+
+void MainWindow::SetSettingsDialog()
+{
+    SettingsDialog::SettingsVM p;
+    p.portName = _serial->portName();
+
+    qint32 baudRate_int = _serial->baudRate();
+    QSerialPort::BaudRate baudRate = static_cast<QSerialPort::BaudRate>(baudRate_int);
+    p.baudRate = baudRate;
+
+    p.dataBits = _serial->dataBits();
+    p.parity = _serial->parity();
+    p.stopBits = _serial->stopBits();
+    p.flowControl = _serial->flowControl();
+    p.localEchoEnabled = false;
+
+    _settingsDialog->setSettings(p);
+}
+
 
 MainWindow::~MainWindow()
 {
-    delete m_settings;
+    delete _settingsDialog;
     delete m_ui;
 }
 
+// a serialsettingshelper beolvassa fájlból a m_serial-ba
 void MainWindow::openSerialPort()
 {
-    const SettingsDialog::Settings p = m_settings->settings();
-    m_serial->setPortName(p.name);
-    m_serial->setBaudRate(p.baudRate);
-    m_serial->setDataBits(p.dataBits);
-    m_serial->setParity(p.parity);
-    m_serial->setStopBits(p.stopBits);
-    m_serial->setFlowControl(p.flowControl);
-    if (m_serial->open(QIODevice::ReadWrite)) {
-        m_console->setEnabled(true);
-        m_console->setLocalEchoEnabled(p.localEchoEnabled);
+    //const SettingsDialog::SettingsVM p = _settingsDialog->settingsVM();
+    // m_serial->setPortName(p.name);
+    // m_serial->setBaudRate(p.baudRate);
+    // m_serial->setDataBits(p.dataBits);
+    // m_serial->setParity(p.parity);
+    // m_serial->setStopBits(p.stopBits);
+    // m_serial->setFlowControl(p.flowControl);
+    if (_serial->open(QIODevice::ReadWrite)) {
+        //_console->setEnabled(true);
+        //_console->setLocalEchoEnabled(_localEchoEnabled);
         m_ui->actionConnect->setEnabled(false);
         m_ui->actionDisconnect->setEnabled(true);
         m_ui->actionConfigure->setEnabled(false);
-        showStatusMessage(tr("Connected to %1 : %2, %3, %4, %5, %6")
-                          .arg(p.name).arg(p.stringBaudRate).arg(p.stringDataBits)
-                          .arg(p.stringParity).arg(p.stringStopBits).arg(p.stringFlowControl));
+
+        QString msg = SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
+        showStatusMessage("Connected:"+msg);
     } else {
-        QMessageBox::critical(this, tr("Error"), m_serial->errorString());
+        QMessageBox::critical(this, tr("Error"), _serial->errorString());
 
         showStatusMessage(tr("Open error"));
     }
 
     //logd = new QList<struct logData>();
-    logd.clear();
+    _sessionLog.clear();
 }
 
 void MainWindow::closeSerialPort()
 {
-    if (m_serial->isOpen())
-        m_serial->close();
-    m_console->setEnabled(false);
+    if (_serial->isOpen())
+        _serial->close();
+    //_console->setEnabled(false);
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
     m_ui->actionConfigure->setEnabled(true);
@@ -144,88 +254,40 @@ void MainWindow::about()
 
 void MainWindow::writeData(const QByteArray &data)
 {
-    m_serial->write(data);
-
-    logd.push_back(logData{QDateTime::currentDateTime(), 1, data });
-
+    // amit küldünk data
+    // ha van echo, kirakjuk a konzolra
+    if (_console->localEcho())
+    {
+        _console->putData(data);
+    }
+    // kirakjuk a logba is
+    _sessionLog.append({SessionLog::Write, data});
+    // majd a portra is
+    _serial->write(data);
 }
 
 void MainWindow::readData()
 {
-    const QByteArray data = m_serial->readAll();
-    m_console->putData(data);
-    logd.push_back(logData{QDateTime::currentDateTime(), 2, data });
+    const QByteArray data = _serial->readAll();
+    // ami jött data
+    // kirakjuk a konzolra
+    _console->putData(data);
+    // kirakjuk a logba is
+    _sessionLog.append({SessionLog::Read, data});
 }
 
 void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {
-        QMessageBox::critical(this, tr("Critical Error"), m_serial->errorString());
+        QMessageBox::critical(this, tr("Critical Error"), _serial->errorString());
         closeSerialPort();
     }
 }
 
-void MainWindow::saveSession()
-{
-
-    logfn = QFileDialog::getSaveFileName(this, tr("Save File"), "/home/pi/terminal_logs", tr(""));
-    if(logfn.isNull() || logfn.isEmpty()) return;
-    QFile logf(logfn);
-    logf.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    //logts = new QTextStream(logf);
-
-    QTextStream logts(&logf);
-    logts<<"Port name; Baud rate; Data bits; Parity bits; Stop bits; Flow control\n";
-    //QString baudRate = EnumHelper::ToString(m_serial->baudRate());
-    logts<<m_serial->portName()<<";"
-           << QString::number(m_serial->baudRate())<<";"
-           << EnumHelper::ToString(m_serial->dataBits())<<";"
-           << EnumHelper::ToString(m_serial->parity())<<";"
-           << EnumHelper::ToString(m_serial->stopBits())<<";"
-           << EnumHelper::ToString(m_serial->flowControl())<<"\n";
-    // *logts<<m_serial->portName()<<";"
-    //        << EnumHelper::getBaudRate(m_serial->baudRate())<<";"
-    //        << EnumHelper::getDataBits(m_serial->dataBits())<<";"
-    //        << EnumHelper::getParity(m_serial->parity())<<";"
-    //        << EnumHelper::getStopBits(m_serial->stopBits())<<";"
-    //        << EnumHelper::getFlowControl(m_serial->flowControl())<<"\n";
-    for(int i = 0; i < logd.length(); i++){
-        auto s = logd.at(i).wr==1?"TX":"RX";
-        logts<<logd.at(i).timestamp.toString("yyyy.mm.dd@HH.mm.ss")<<" "<<s<<" "<<logd.at(i).data<<"\n";
-    }
-    QFile logf2(logfn+".txt");
-    logf2.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    logts.setDevice(&logf2);
-    logts<<m_console->toPlainText();
-    logf.close();
-    logf2.close();
-    saveSettings();
-}
-
-// void MainWindow::loadSession()
-// {
-//     settingsFn = QFileDialog::getOpenFileName(this, tr("Load Setting"), "/home/pi/terminal_settings", tr(""));
-//     loadSettings();
-// }
-
 void MainWindow::clear()
 {
-    //if(!logd) return;
-    logd.clear();
-}
-
-void MainWindow::initActionsConnections()
-{
-    connect(m_ui->actionConnect, &QAction::triggered, this, &MainWindow::openSerialPort);
-    connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::closeSerialPort);
-    connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
-    connect(m_ui->actionConfigure, &QAction::triggered, m_settings, &SettingsDialog::show);
-    connect(m_ui->actionClear, &QAction::triggered, m_console, &Console::clear);
-    connect(m_ui->actionClear, &QAction::triggered, this, &MainWindow::clear);
-    connect(m_ui->actionAbout, &QAction::triggered, this, &MainWindow::about);
-    connect(m_ui->actionAboutQt, &QAction::triggered, qApp, &QApplication::aboutQt);
-    //connect(m_ui->actionSave, &QAction::triggered, this, &MainWindow::saveSession);
-    //connect(m_ui->actionLoad, &QAction::triggered, this, &MainWindow::loadSession);
+    _sessionLog.clear();
+    _console->clear();
 }
 
 void MainWindow::showStatusMessage(const QString &message)
@@ -233,55 +295,35 @@ void MainWindow::showStatusMessage(const QString &message)
     m_status->setText(message);
 }
 
-void MainWindow::loadSettings()
-{
-    if(settingsFn.isNull() || settingsFn.isEmpty()){
-        QDir d("/home/pi/terminal_settings");
-        auto list = d.entryList(QDir::NoFilter, QDir::Time);
-        if(list.isEmpty()) return;
 
-        settingsFn = list.at(1);
-        if(settingsFn.isNull() || settingsFn.isEmpty()) return;
-        settingsFn = "/home/pi/terminal_settings/" + settingsFn;
-
-    }
-    QSettings settings(settingsFn, QSettings::NativeFormat);
-    m_serial->setPortName(settings.value("name").toString());
-    m_serial->setBaudRate(settings.value("bR").toInt());
-    m_serial->setDataBits(settings.value("dB").value<QSerialPort::DataBits>());
-    m_serial->setStopBits(settings.value("sB").value<QSerialPort::StopBits>());
-    m_serial->setParity(settings.value("par").value<QSerialPort::Parity>());
-    m_serial->setFlowControl(settings.value("fC").value<QSerialPort::FlowControl>());
-
-    SettingsDialog::Settings p;
-    p.name = m_serial->portName();
-
-    qint32 baudRate_int = m_serial->baudRate();
-    QSerialPort::BaudRate baudRate = static_cast<QSerialPort::BaudRate>(baudRate_int);
-    p.baudRate = baudRate;
-
-    p.dataBits = m_serial->dataBits();
-    p.parity = m_serial->parity();
-    p.stopBits = m_serial->stopBits();
-    p.flowControl = m_serial->flowControl();
-    p.localEchoEnabled = false;
-    m_settings->setSettings(p);
-}
+/**/
 
 void MainWindow::saveSettings()
 {
-    settingsFn = "/home/pi/terminal_settings/" + logfn.split('/').last();
-    QSettings settings(settingsFn, QSettings::NativeFormat);
-    QString name = m_serial->portName();
-    qint32 bR = m_serial->baudRate();
-    QSerialPort::DataBits dB = m_serial->dataBits();
-    QSerialPort::StopBits sB = m_serial->stopBits();
-    QSerialPort::Parity par = m_serial->parity();
-    QSerialPort::FlowControl fC = m_serial->flowControl();
-    settings.setValue("bR", bR);
-    settings.setValue("dB", dB);
-    settings.setValue("sB", sB);
-    settings.setValue("par", par);
-    settings.setValue("fC", fC);
-    settings.setValue("name", name);
+    auto fn = QFileDialog::getSaveFileName(this, tr("Save Setting"), "/home/pi/terminal_settings", tr(""));
+    SerialSettingsHelper::saveSettings(fn, _serial, _console->localEcho());
+}
+
+void MainWindow::loadSettings()
+{
+    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Setting"), "/home/pi/terminal_settings", tr(""));
+    bool localEcho;
+    SerialSettingsHelper::loadSettings(fn, _serial, &localEcho);
+    _console->setLocalEcho(localEcho);
+}
+
+void MainWindow::saveSession()
+{
+    auto fn = QFileDialog::getSaveFileName(this, tr("Save Session"), "/home/pi/terminal_logs", tr(""));
+    QString stxt = SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
+    QString ctxt = _console->toPlainText();
+    _sessionLog.saveSession(fn, stxt, ctxt);
+}
+
+void MainWindow::loadSession()
+{
+    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Session"), "/home/pi/terminal_logs", tr(""));
+    QString stxt = _sessionLog.loadSession(fn);
+
+    _console->putData(stxt.toLocal8Bit());
 }

@@ -75,6 +75,11 @@ protected:
 
 private:
     bool m_localEchoEnabled = false;
+
+public:
+    //bool* localEcho_ptr(){return &m_localEchoEnabled;}
+    void setLocalEcho(bool v){m_localEchoEnabled = v;}
+    bool localEcho(){return m_localEchoEnabled;}
 };
 
 #endif // CONSOLE_H

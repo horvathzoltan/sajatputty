@@ -49,7 +49,7 @@
 **
 ****************************************************************************/
 
-#include "enumhelper.h"
+#include "helpers/enumhelper.h"
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
@@ -70,7 +70,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     m_ui->baudRateBox->setInsertPolicy(QComboBox::NoInsert);
 
     connect(m_ui->applyButton, &QPushButton::clicked,
-            this, &SettingsDialog::apply);
+            this, &SettingsDialog::applyButtonClicked);
     connect(m_ui->serialPortInfoListBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &SettingsDialog::showPortInfo);
     connect(m_ui->baudRateBox,  QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -89,32 +89,38 @@ SettingsDialog::~SettingsDialog()
     delete m_ui;
 }
 
-SettingsDialog::Settings SettingsDialog::settings() const
+
+
+void SettingsDialog::setSettings(const SettingsVM& p)
 {
-    return m_currentSettings;
-}
+    _currentSettings = p;
 
-void SettingsDialog::setSettings(Settings p)
-{
-    m_currentSettings.name = p.name;
-    m_currentSettings.baudRate = p.baudRate;
-    m_currentSettings.dataBits = p.dataBits;
-    m_currentSettings.parity = p.parity;
-    m_currentSettings.stopBits = p.stopBits;
-    m_currentSettings.flowControl = p.flowControl;
+    m_ui->baudRateBox->setCurrentText(EnumHelper::ToString(p.baudRate));
+    m_ui->serialPortInfoListBox->setCurrentText(p.portName);
+    m_ui->dataBitsBox->setCurrentText(EnumHelper::ToString(p.dataBits));
+    m_ui->parityBox->setCurrentText(EnumHelper::ToString(p.parity));
+    m_ui->stopBitsBox->setCurrentText(EnumHelper::ToString(p.stopBits));
+    m_ui->flowControlBox->setCurrentText(EnumHelper::ToString(p.flowControl));
 
-    m_currentSettings.stringParity = EnumHelper::ToString(m_currentSettings.parity);
-    m_currentSettings.stringBaudRate = QString::number(m_currentSettings.baudRate); // EnumHelper::ToString(m_currentSettings.baudRate);
-    m_currentSettings.stringDataBits = EnumHelper::ToString(m_currentSettings.dataBits);
-    m_currentSettings.stringStopBits = EnumHelper::ToString(m_currentSettings.stopBits);
-    m_currentSettings.stringFlowControl = EnumHelper::ToString(m_currentSettings.flowControl);
+    // _currentSettings.name = p.name;
+    // _currentSettings.baudRate = p.baudRate;
+    // _currentSettings.dataBits = p.dataBits;
+    // _currentSettings.parity = p.parity;
+    // _currentSettings.stopBits = p.stopBits;
+    // _currentSettings.flowControl = p.flowControl;
 
-    m_ui->baudRateBox->setCurrentText(m_currentSettings.stringBaudRate);
-    m_ui->serialPortInfoListBox->setCurrentText(m_currentSettings.name);
-    m_ui->dataBitsBox->setCurrentText(m_currentSettings.stringDataBits);
-    m_ui->parityBox->setCurrentText(m_currentSettings.stringParity);
-    m_ui->stopBitsBox->setCurrentText(m_currentSettings.stringStopBits);
-    m_ui->flowControlBox->setCurrentText(m_currentSettings.stringFlowControl);
+    // _currentSettings.stringParity = EnumHelper::ToString(_currentSettings.parity);
+    //stringBaudRate = QString::number(_currentSettings.baudRate); // EnumHelper::ToString(m_currentSettings.baudRate);
+    // _currentSettings.stringDataBits = EnumHelper::ToString(_currentSettings.dataBits);
+    // _currentSettings.stringStopBits = EnumHelper::ToString(_currentSettings.stopBits);
+    // _currentSettings.stringFlowControl = EnumHelper::ToString(_currentSettings.flowControl);
+
+    // m_ui->baudRateBox->setCurrentText(p.stringBaudRate);
+    // m_ui->serialPortInfoListBox->setCurrentText(_currentSettings.name);
+    // m_ui->dataBitsBox->setCurrentText(_currentSettings.stringDataBits);
+    // m_ui->parityBox->setCurrentText(_currentSettings.stringParity);
+    // m_ui->stopBitsBox->setCurrentText(_currentSettings.stringStopBits);
+    // m_ui->flowControlBox->setCurrentText(_currentSettings.stringFlowControl);
 }
 
 void SettingsDialog::showPortInfo(int idx)
@@ -131,9 +137,9 @@ void SettingsDialog::showPortInfo(int idx)
     m_ui->pidLabel->setText(tr("Product Identifier: %1").arg(list.count() > 6 ? list.at(6) : tr(blankString)));
 }
 
-void SettingsDialog::apply()
+void SettingsDialog::applyButtonClicked()
 {
-    updateSettings();
+    emit apply();
     hide();
 }
 
@@ -221,38 +227,38 @@ void SettingsDialog::fillPortsInfo()
 
 void SettingsDialog::updateSettings()
 {
-    m_currentSettings.name = m_ui->serialPortInfoListBox->currentText();   
+    _currentSettings.portName = m_ui->serialPortInfoListBox->currentText();
 
     bool ok;
     int baudRate_ix = m_ui->baudRateBox->currentIndex();
     int baudRate_int = m_ui->baudRateBox->itemData(baudRate_ix).toInt(&ok);
     if(ok)
     {
-        m_currentSettings.baudRate = static_cast<QSerialPort::BaudRate>(baudRate_int);
+        _currentSettings.baudRate = static_cast<QSerialPort::BaudRate>(baudRate_int);
     }
     else
     {
-        m_currentSettings.baudRate = QSerialPort::BaudRate::UnknownBaud;
+        _currentSettings.baudRate = QSerialPort::BaudRate::UnknownBaud;
     }
-    m_currentSettings.stringBaudRate = QString::number(m_currentSettings.baudRate);
+    //_currentSettings.stringBaudRate = QString::number(_currentSettings.baudRate);
 
-    m_currentSettings.dataBits = static_cast<QSerialPort::DataBits>(
+    _currentSettings.dataBits = static_cast<QSerialPort::DataBits>(
                 m_ui->dataBitsBox->itemData(m_ui->dataBitsBox->currentIndex()).toInt());
-    m_currentSettings.stringDataBits = m_ui->dataBitsBox->currentText();
+    //_currentSettings.stringDataBits = m_ui->dataBitsBox->currentText();
 
-    m_currentSettings.parity = static_cast<QSerialPort::Parity>(
+    _currentSettings.parity = static_cast<QSerialPort::Parity>(
                 m_ui->parityBox->itemData(m_ui->parityBox->currentIndex()).toInt());
-    m_currentSettings.stringParity = m_ui->parityBox->currentText();
+    //_currentSettings.stringParity = m_ui->parityBox->currentText();
 
-    m_currentSettings.stopBits = static_cast<QSerialPort::StopBits>(
+    _currentSettings.stopBits = static_cast<QSerialPort::StopBits>(
                 m_ui->stopBitsBox->itemData(m_ui->stopBitsBox->currentIndex()).toInt());
-    m_currentSettings.stringStopBits = m_ui->stopBitsBox->currentText();
+    //_currentSettings.stringStopBits = m_ui->stopBitsBox->currentText();
 
-    m_currentSettings.flowControl = static_cast<QSerialPort::FlowControl>(
+    _currentSettings.flowControl = static_cast<QSerialPort::FlowControl>(
                 m_ui->flowControlBox->itemData(m_ui->flowControlBox->currentIndex()).toInt());
-    m_currentSettings.stringFlowControl = m_ui->flowControlBox->currentText();
+    //_currentSettings.stringFlowControl = m_ui->flowControlBox->currentText();
 
-    m_currentSettings.localEchoEnabled = m_ui->localEchoCheckBox->isChecked();
+    _currentSettings.localEchoEnabled = m_ui->localEchoCheckBox->isChecked();
 }
 
 void SettingsDialog::on_pushButton_clicked()
