@@ -64,10 +64,7 @@ Console::Console(QWidget *parent) :
 
     QScrollBar *bar = verticalScrollBar();
     bar->setEnabled(true);
-    // bar->setDisabled(false);
-    //setVerticalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOn);
     setTextInteractionFlags(Qt::TextBrowserInteraction);
-
 }
 
 
@@ -77,14 +74,6 @@ void Console::putData(const QByteArray &data)
 
     QScrollBar *bar = verticalScrollBar();        
     bar->setValue(bar->maximum());
-
-    //QScrollBar *bar = verticalScrollBar();
-    //bar->setEnabled(true);
-
-    //bar->setEnabled(true);
-
- //   QMetaObject::invokeMethod(bar, "setValue", Qt::QueuedConnection, Q_ARG(int, bar->maximum()));
-
 }
 
 void Console::setLocalEchoEnabled(bool set)
