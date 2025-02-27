@@ -125,6 +125,7 @@ void MainWindow::initActionsConnections()
 
 void MainWindow::process_ActionConfigure()
 {
+    SetSettingsDialog();
     _settingsDialog->show();
 }
 
@@ -193,7 +194,7 @@ void MainWindow::SetSettingsDialog()
     p.flowControl = _serial->flowControl();
     p.localEchoEnabled = false;
 
-    _settingsDialog->setSettings(p);
+    _settingsDialog->WriteSettings(p);
 }
 
 

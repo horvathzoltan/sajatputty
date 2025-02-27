@@ -76,7 +76,6 @@ public:
         QSerialPort::DataBits dataBits;
         QSerialPort::StopBits stopBits;
         QSerialPort::Parity parity;
-
         QSerialPort::FlowControl flowControl;
         bool localEchoEnabled;
     };
@@ -85,7 +84,7 @@ public:
     ~SettingsDialog();
 
     SettingsVM settings(){return _currentSettings;}
-    void setSettings(const SettingsVM &);
+    void WriteSettings(const SettingsVM &);
 
     //void SetSettingsDialog(SettingsVM settings);
 private slots:
@@ -101,7 +100,7 @@ signals:
 private:
     void fillPortsParameters();
     void fillPortsInfo();
-    void updateSettings();
+    void ReadSettings();
 
 private:
     Ui::SettingsDialog *m_ui = nullptr;
