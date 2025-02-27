@@ -72,16 +72,12 @@ class SettingsDialog : public QDialog
 public:
     struct SettingsVM {
         QString portName;
-        QSerialPort::BaudRate baudRate;
-        //QString stringBaudRate;
+        QSerialPort::BaudRate baudRate;        
         QSerialPort::DataBits dataBits;
-        //QString stringDataBits;
-        QSerialPort::Parity parity;
-        //QString stringParity;
         QSerialPort::StopBits stopBits;
-        //QString stringStopBits;
+        QSerialPort::Parity parity;
+
         QSerialPort::FlowControl flowControl;
-        //QString stringFlowControl;
         bool localEchoEnabled;
     };
 
