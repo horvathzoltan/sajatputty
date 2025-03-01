@@ -70,9 +70,10 @@ Console::Console(QWidget *parent) :
 
 void Console::putData(const QByteArray &data)
 {
-    insertPlainText(data);
+    QString txt = QString::fromLocal8Bit(data);
+    insertPlainText(txt);
 
-    QScrollBar *bar = verticalScrollBar();        
+    QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());
 }
 
@@ -83,7 +84,8 @@ void Console::setLocalEchoEnabled(bool set)
 
 void Console::keyPressEvent(QKeyEvent *e)
 {
-    switch (e->key()) {
+    switch (e->key())
+    {
     case Qt::Key_Backspace:
     case Qt::Key_Left:
     case Qt::Key_Right:
@@ -91,8 +93,11 @@ void Console::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Down:
         break;
     default:
-
-        emit getData(e->text().toLocal8Bit());
+    {
+        QByteArray data =  e->text().toLocal8Bit();
+        emit getData(data);
+        break;
+    }
     }
 }
 

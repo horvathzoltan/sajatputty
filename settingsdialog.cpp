@@ -58,6 +58,8 @@
 #include <QSerialPortInfo>
 #include <QMetaEnum>
 
+#include <helpers/serialsettingshelper.h>
+
 static const char blankString[] = QT_TRANSLATE_NOOP("SettingsDialog", "N/A");
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
@@ -80,8 +82,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     fillPortsParameters();
     fillPortsInfo();
-
-    updateSettings();
 }
 
 SettingsDialog::~SettingsDialog()
@@ -90,37 +90,17 @@ SettingsDialog::~SettingsDialog()
 }
 
 
-
-void SettingsDialog::setSettings(const SettingsVM& p)
+void SettingsDialog::WriteSettings(const SettingsVM& p)
 {
     _currentSettings = p;
 
-    m_ui->baudRateBox->setCurrentText(EnumHelper::ToString(p.baudRate));
     m_ui->serialPortInfoListBox->setCurrentText(p.portName);
-    m_ui->dataBitsBox->setCurrentText(EnumHelper::ToString(p.dataBits));
-    m_ui->parityBox->setCurrentText(EnumHelper::ToString(p.parity));
-    m_ui->stopBitsBox->setCurrentText(EnumHelper::ToString(p.stopBits));
-    m_ui->flowControlBox->setCurrentText(EnumHelper::ToString(p.flowControl));
 
-    // _currentSettings.name = p.name;
-    // _currentSettings.baudRate = p.baudRate;
-    // _currentSettings.dataBits = p.dataBits;
-    // _currentSettings.parity = p.parity;
-    // _currentSettings.stopBits = p.stopBits;
-    // _currentSettings.flowControl = p.flowControl;
-
-    // _currentSettings.stringParity = EnumHelper::ToString(_currentSettings.parity);
-    //stringBaudRate = QString::number(_currentSettings.baudRate); // EnumHelper::ToString(m_currentSettings.baudRate);
-    // _currentSettings.stringDataBits = EnumHelper::ToString(_currentSettings.dataBits);
-    // _currentSettings.stringStopBits = EnumHelper::ToString(_currentSettings.stopBits);
-    // _currentSettings.stringFlowControl = EnumHelper::ToString(_currentSettings.flowControl);
-
-    // m_ui->baudRateBox->setCurrentText(p.stringBaudRate);
-    // m_ui->serialPortInfoListBox->setCurrentText(_currentSettings.name);
-    // m_ui->dataBitsBox->setCurrentText(_currentSettings.stringDataBits);
-    // m_ui->parityBox->setCurrentText(_currentSettings.stringParity);
-    // m_ui->stopBitsBox->setCurrentText(_currentSettings.stringStopBits);
-    // m_ui->flowControlBox->setCurrentText(_currentSettings.stringFlowControl);
+    m_ui->baudRateBox->setCurrentText(SerialSettingsHelper::BaudToText(p.baudRate));
+    m_ui->dataBitsBox->setCurrentText(SerialSettingsHelper::DataBitsToText(p.dataBits));
+    m_ui->stopBitsBox->setCurrentText(SerialSettingsHelper::StopBitsToText(p.stopBits));
+    m_ui->parityBox->setCurrentText(SerialSettingsHelper::ParityToText(p.parity));
+    m_ui->flowControlBox->setCurrentText(SerialSettingsHelper::FlowControlToText(p.flowControl));
 }
 
 void SettingsDialog::showPortInfo(int idx)
@@ -139,6 +119,7 @@ void SettingsDialog::showPortInfo(int idx)
 
 void SettingsDialog::applyButtonClicked()
 {
+    ReadSettings();
     emit apply();
     hide();
 }
@@ -162,41 +143,45 @@ void SettingsDialog::checkCustomDevicePathPolicy(int idx)
         m_ui->serialPortInfoListBox->clearEditText();
 }
 
+
+
+
+
 void SettingsDialog::fillPortsParameters()
 {
-    m_ui->baudRateBox->addItem(QStringLiteral("1200"), QSerialPort::Baud1200);
-    m_ui->baudRateBox->addItem(QStringLiteral("2400"), QSerialPort::Baud2400);
-    m_ui->baudRateBox->addItem(QStringLiteral("4800"), QSerialPort::Baud4800);
-    m_ui->baudRateBox->addItem(QStringLiteral("9600"), QSerialPort::Baud9600);
-    m_ui->baudRateBox->addItem(QStringLiteral("19200"), QSerialPort::Baud19200);
-    m_ui->baudRateBox->addItem(QStringLiteral("38400"), QSerialPort::Baud38400);
-    m_ui->baudRateBox->addItem(QStringLiteral("57600"), QSerialPort::Baud57600);
-    m_ui->baudRateBox->addItem(QStringLiteral("115200"), QSerialPort::Baud115200);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud1200), QSerialPort::Baud1200);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud2400), QSerialPort::Baud2400);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud4800), QSerialPort::Baud4800);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud9600), QSerialPort::Baud9600);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud19200), QSerialPort::Baud19200);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud38400),QSerialPort::Baud38400);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud57600),QSerialPort::Baud57600);
+    m_ui->baudRateBox->addItem(SerialSettingsHelper::BaudToText(QSerialPort::Baud115200),QSerialPort::Baud115200);
     m_ui->dataBitsBox->setCurrentIndex(3);
 
     //m_ui->baudRateBox->addItem(tr("Custom"));
 
-    m_ui->dataBitsBox->addItem(QStringLiteral("5"), QSerialPort::Data5);
-    m_ui->dataBitsBox->addItem(QStringLiteral("6"), QSerialPort::Data6);
-    m_ui->dataBitsBox->addItem(QStringLiteral("7"), QSerialPort::Data7);
-    m_ui->dataBitsBox->addItem(QStringLiteral("8"), QSerialPort::Data8);
+    m_ui->dataBitsBox->addItem(SerialSettingsHelper::DataBitsToText(QSerialPort::Data5),QSerialPort::Data5);
+    m_ui->dataBitsBox->addItem(SerialSettingsHelper::DataBitsToText(QSerialPort::Data6),QSerialPort::Data6);
+    m_ui->dataBitsBox->addItem(SerialSettingsHelper::DataBitsToText(QSerialPort::Data7),QSerialPort::Data7);
+    m_ui->dataBitsBox->addItem(SerialSettingsHelper::DataBitsToText(QSerialPort::Data8),QSerialPort::Data8);
     m_ui->dataBitsBox->setCurrentIndex(3);
 
-    m_ui->parityBox->addItem(tr("None"), QSerialPort::NoParity);
-    m_ui->parityBox->addItem(tr("Even"), QSerialPort::EvenParity);
-    m_ui->parityBox->addItem(tr("Odd"), QSerialPort::OddParity);
-    m_ui->parityBox->addItem(tr("Mark"), QSerialPort::MarkParity);
-    m_ui->parityBox->addItem(tr("Space"), QSerialPort::SpaceParity);
+    m_ui->parityBox->addItem(SerialSettingsHelper::ParityToText(QSerialPort::NoParity), QSerialPort::NoParity);
+    m_ui->parityBox->addItem(SerialSettingsHelper::ParityToText(QSerialPort::EvenParity), QSerialPort::EvenParity);
+    m_ui->parityBox->addItem(SerialSettingsHelper::ParityToText(QSerialPort::OddParity), QSerialPort::OddParity);
+    m_ui->parityBox->addItem(SerialSettingsHelper::ParityToText(QSerialPort::MarkParity), QSerialPort::MarkParity);
+    m_ui->parityBox->addItem(SerialSettingsHelper::ParityToText(QSerialPort::SpaceParity), QSerialPort::SpaceParity);
 
-    m_ui->stopBitsBox->addItem(QStringLiteral("1"), QSerialPort::OneStop);
+    m_ui->stopBitsBox->addItem(SerialSettingsHelper::StopBitsToText(QSerialPort::OneStop), QSerialPort::OneStop);
 #ifdef Q_OS_WIN
-    m_ui->stopBitsBox->addItem(tr("1.5"), QSerialPort::OneAndHalfStop);
+    m_ui->stopBitsBox->addItem(SerialSettingsHelper::StopBitsToText(QSerialPort::OneAndHalfStop), QSerialPort::OneAndHalfStop);
 #endif
-    m_ui->stopBitsBox->addItem(QStringLiteral("2"), QSerialPort::TwoStop);
+    m_ui->stopBitsBox->addItem(SerialSettingsHelper::StopBitsToText(QSerialPort::TwoStop), QSerialPort::TwoStop);
 
-    m_ui->flowControlBox->addItem(tr("None"), QSerialPort::NoFlowControl);
-    m_ui->flowControlBox->addItem(tr("RTS/CTS"), QSerialPort::HardwareControl);
-    m_ui->flowControlBox->addItem(tr("XON/XOFF"), QSerialPort::SoftwareControl);
+    m_ui->flowControlBox->addItem(SerialSettingsHelper::FlowControlToText(QSerialPort::NoFlowControl), QSerialPort::NoFlowControl);
+    m_ui->flowControlBox->addItem(SerialSettingsHelper::FlowControlToText(QSerialPort::HardwareControl), QSerialPort::HardwareControl);
+    m_ui->flowControlBox->addItem(SerialSettingsHelper::FlowControlToText(QSerialPort::SoftwareControl), QSerialPort::SoftwareControl);
 }
 
 void SettingsDialog::fillPortsInfo()
@@ -225,7 +210,7 @@ void SettingsDialog::fillPortsInfo()
     m_ui->serialPortInfoListBox->addItem(tr("Custom"));
 }
 
-void SettingsDialog::updateSettings()
+void SettingsDialog::ReadSettings()
 {
     _currentSettings.portName = m_ui->serialPortInfoListBox->currentText();
 

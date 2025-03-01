@@ -49,63 +49,74 @@
 **
 ****************************************************************************/
 
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#include "console.h"
 
-#include <QDialog>
-#include <QSerialPort>
+#include <QScrollBar>
 
-QT_BEGIN_NAMESPACE
+Console::Console(QWidget *parent) :
+    QPlainTextEdit(parent)
+{
+    document()->setMaximumBlockCount(100);
+    QPalette p = palette();
+    p.setColor(QPalette::Base, Qt::black);
+    p.setColor(QPalette::Text, Qt::green);
+    setPalette(p);
 
-namespace Ui {
-class SettingsDialog;
+    QScrollBar *bar = verticalScrollBar();
+    bar->setEnabled(true);
+    setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
-class QIntValidator;
 
-QT_END_NAMESPACE
-
-class SettingsDialog : public QDialog
+void Console::putData(const QByteArray &data)
 {
-    Q_OBJECT
+    QString txt = QString::fromLocal8Bit(data);
+    insertPlainText(txt);
 
-public:
-    struct SettingsVM {
-        QString portName;
-        QSerialPort::BaudRate baudRate;        
-        QSerialPort::DataBits dataBits;
-        QSerialPort::StopBits stopBits;
-        QSerialPort::Parity parity;
-        QSerialPort::FlowControl flowControl;
-        bool localEchoEnabled;
-    };
+    QScrollBar *bar = verticalScrollBar();
+    bar->setValue(bar->maximum());
+<<<<<<< HEAD
 
-    explicit SettingsDialog(QWidget *parent = nullptr);
-    ~SettingsDialog();
+=======
+>>>>>>> 0eb8e42a4b055894ba551dc132be1fe8db69220a
+}
 
-    SettingsVM settings(){return _currentSettings;}
-    void WriteSettings(const SettingsVM &);
+void Console::setLocalEchoEnabled(bool set)
+{
+    m_localEchoEnabled = set;
+}
 
-    //void SetSettingsDialog(SettingsVM settings);
-private slots:
-    void showPortInfo(int idx);
-    void applyButtonClicked();
-    void checkCustomBaudRatePolicy(int idx);
-    void checkCustomDevicePathPolicy(int idx);
-    void on_pushButton_clicked();
+void Console::keyPressEvent(QKeyEvent *e)
+{
+    switch (e->key())
+    {
+    case Qt::Key_Backspace:
+    case Qt::Key_Left:
+    case Qt::Key_Right:
+    case Qt::Key_Up:
+    case Qt::Key_Down:
+        break;
+    default:
+    {
+        QByteArray data =  e->text().toLocal8Bit();
+        emit getData(data);
+        break;
+    }
+    }
+}
 
-signals:
-    void apply();
+void Console::mousePressEvent(QMouseEvent *e)
+{
+    Q_UNUSED(e)
+    setFocus();
+}
 
-private:
-    void fillPortsParameters();
-    void fillPortsInfo();
-    void ReadSettings();
+void Console::mouseDoubleClickEvent(QMouseEvent *e)
+{
+    Q_UNUSED(e)
+}
 
-private:
-    Ui::SettingsDialog *m_ui = nullptr;
-    SettingsVM _currentSettings;
-    QIntValidator *m_intValidator = nullptr;
-};
-
-#endif // SETTINGSDIALOG_H
+void Console::contextMenuEvent(QContextMenuEvent *e)
+{
+    Q_UNUSED(e)
+}

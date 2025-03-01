@@ -31,16 +31,16 @@ public:
     QGridLayout *gridLayout_3;
     QGroupBox *parametersBox;
     QGridLayout *gridLayout_2;
-    QLabel *baudRateLabel;
-    QComboBox *baudRateBox;
     QLabel *dataBitsLabel;
+    QComboBox *flowControlBox;
+    QLabel *baudRateLabel;
     QComboBox *dataBitsBox;
-    QLabel *parityLabel;
+    QComboBox *baudRateBox;
     QComboBox *parityBox;
+    QLabel *parityLabel;
+    QLabel *flowControlLabel;
     QLabel *stopBitsLabel;
     QComboBox *stopBitsBox;
-    QLabel *flowControlLabel;
-    QComboBox *flowControlBox;
     QGroupBox *selectBox;
     QGridLayout *gridLayout;
     QComboBox *serialPortInfoListBox;
@@ -62,62 +62,62 @@ public:
     {
         if (SettingsDialog->objectName().isEmpty())
             SettingsDialog->setObjectName(QString::fromUtf8("SettingsDialog"));
-        SettingsDialog->resize(374, 331);
+        SettingsDialog->resize(401, 331);
         gridLayout_3 = new QGridLayout(SettingsDialog);
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         parametersBox = new QGroupBox(SettingsDialog);
         parametersBox->setObjectName(QString::fromUtf8("parametersBox"));
         gridLayout_2 = new QGridLayout(parametersBox);
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
-        baudRateLabel = new QLabel(parametersBox);
-        baudRateLabel->setObjectName(QString::fromUtf8("baudRateLabel"));
-
-        gridLayout_2->addWidget(baudRateLabel, 0, 0, 1, 1);
-
-        baudRateBox = new QComboBox(parametersBox);
-        baudRateBox->setObjectName(QString::fromUtf8("baudRateBox"));
-
-        gridLayout_2->addWidget(baudRateBox, 0, 1, 1, 1);
-
         dataBitsLabel = new QLabel(parametersBox);
         dataBitsLabel->setObjectName(QString::fromUtf8("dataBitsLabel"));
 
         gridLayout_2->addWidget(dataBitsLabel, 1, 0, 1, 1);
+
+        flowControlBox = new QComboBox(parametersBox);
+        flowControlBox->setObjectName(QString::fromUtf8("flowControlBox"));
+
+        gridLayout_2->addWidget(flowControlBox, 5, 1, 1, 1);
+
+        baudRateLabel = new QLabel(parametersBox);
+        baudRateLabel->setObjectName(QString::fromUtf8("baudRateLabel"));
+
+        gridLayout_2->addWidget(baudRateLabel, 0, 0, 1, 1);
 
         dataBitsBox = new QComboBox(parametersBox);
         dataBitsBox->setObjectName(QString::fromUtf8("dataBitsBox"));
 
         gridLayout_2->addWidget(dataBitsBox, 1, 1, 1, 1);
 
-        parityLabel = new QLabel(parametersBox);
-        parityLabel->setObjectName(QString::fromUtf8("parityLabel"));
+        baudRateBox = new QComboBox(parametersBox);
+        baudRateBox->setObjectName(QString::fromUtf8("baudRateBox"));
 
-        gridLayout_2->addWidget(parityLabel, 2, 0, 1, 1);
+        gridLayout_2->addWidget(baudRateBox, 0, 1, 1, 1);
 
         parityBox = new QComboBox(parametersBox);
         parityBox->setObjectName(QString::fromUtf8("parityBox"));
 
-        gridLayout_2->addWidget(parityBox, 2, 1, 1, 1);
+        gridLayout_2->addWidget(parityBox, 3, 1, 1, 1);
 
-        stopBitsLabel = new QLabel(parametersBox);
-        stopBitsLabel->setObjectName(QString::fromUtf8("stopBitsLabel"));
+        parityLabel = new QLabel(parametersBox);
+        parityLabel->setObjectName(QString::fromUtf8("parityLabel"));
 
-        gridLayout_2->addWidget(stopBitsLabel, 3, 0, 1, 1);
-
-        stopBitsBox = new QComboBox(parametersBox);
-        stopBitsBox->setObjectName(QString::fromUtf8("stopBitsBox"));
-
-        gridLayout_2->addWidget(stopBitsBox, 3, 1, 1, 1);
+        gridLayout_2->addWidget(parityLabel, 3, 0, 1, 1);
 
         flowControlLabel = new QLabel(parametersBox);
         flowControlLabel->setObjectName(QString::fromUtf8("flowControlLabel"));
 
-        gridLayout_2->addWidget(flowControlLabel, 4, 0, 1, 1);
+        gridLayout_2->addWidget(flowControlLabel, 5, 0, 1, 1);
 
-        flowControlBox = new QComboBox(parametersBox);
-        flowControlBox->setObjectName(QString::fromUtf8("flowControlBox"));
+        stopBitsLabel = new QLabel(parametersBox);
+        stopBitsLabel->setObjectName(QString::fromUtf8("stopBitsLabel"));
 
-        gridLayout_2->addWidget(flowControlBox, 4, 1, 1, 1);
+        gridLayout_2->addWidget(stopBitsLabel, 2, 0, 1, 1);
+
+        stopBitsBox = new QComboBox(parametersBox);
+        stopBitsBox->setObjectName(QString::fromUtf8("stopBitsBox"));
+
+        gridLayout_2->addWidget(stopBitsBox, 2, 1, 1, 1);
 
 
         gridLayout_3->addWidget(parametersBox, 0, 1, 1, 1);
@@ -209,11 +209,11 @@ public:
     {
         SettingsDialog->setWindowTitle(QCoreApplication::translate("SettingsDialog", "Settings", nullptr));
         parametersBox->setTitle(QCoreApplication::translate("SettingsDialog", "Select Parameters", nullptr));
-        baudRateLabel->setText(QCoreApplication::translate("SettingsDialog", "BaudRate:", nullptr));
         dataBitsLabel->setText(QCoreApplication::translate("SettingsDialog", "Data bits:", nullptr));
+        baudRateLabel->setText(QCoreApplication::translate("SettingsDialog", "BaudRate:", nullptr));
         parityLabel->setText(QCoreApplication::translate("SettingsDialog", "Parity:", nullptr));
-        stopBitsLabel->setText(QCoreApplication::translate("SettingsDialog", "Stop bits:", nullptr));
         flowControlLabel->setText(QCoreApplication::translate("SettingsDialog", "Flow control:", nullptr));
+        stopBitsLabel->setText(QCoreApplication::translate("SettingsDialog", "Stop bits:", nullptr));
         selectBox->setTitle(QCoreApplication::translate("SettingsDialog", "Select Serial Port", nullptr));
         manufacturerLabel->setText(QCoreApplication::translate("SettingsDialog", "Manufacturer:", nullptr));
         pidLabel->setText(QCoreApplication::translate("SettingsDialog", "Product ID:", nullptr));
