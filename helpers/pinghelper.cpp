@@ -3,75 +3,69 @@
 #include "qcoreapplication.h"
 
 #include <QElapsedTimer>
-#include <QProcessEnvironment>
+#include <QRegularExpression>
+#include <QStringLiteral>
 
 PingHelper::PingHelper() {}
 
 PingHelper::PingResult_1 PingHelper::Ping_1(const QHostAddress& host, quint32 time, quint32 loopMax)
 {
-    static QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-
-    QProcess process;
     QString hostName = host.toString();
 
     PingHelper::PingResult_1 r;
 
-    QString cmd = QStringLiteral("ping -c%1 -w%2 %3").arg(loopMax).arg(time).arg(host)
+    QString cmd = QStringLiteral("ping -c%1 -w%2 %3 | grep from").arg(loopMax).arg(time).arg(hostName);
     ProcessHelper::Output o = ProcessHelper::ShellExecute(cmd);
 
-    r.ok = exitCode==0;
-
-    if(r.ok){
-        r._ping.Parse(stdOut);
+    r._elapsedMillis = o.elapsedMillis;
+    r.ok = o.exitCode==0;
+    if(r.ok)
+    {
+        QStringList l = o.stdOut.split("\n");
+        if(!l.isEmpty())
+        {
+            if(!l[0].isEmpty())
+            {
+                r._ping.Parse(l[0]);
+            }
+        }
     }
 
     return r;
 }
 
 
-PingHelper::PingResult_Many PingHelper::Ping_Many(const QHostAddress& host, quint32 timeoutMillis, quint32 loopMax)
+PingHelper::PingResult_Many PingHelper::Ping_Many(const QHostAddress& host, quint32 time, quint32 loopMax)
 {
-    static QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    //static QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    QProcess process;
+    //QProcess process;
     QString hostName = host.toString();
 
+    int ix = hostName.lastIndexOf(".");
+    if(ix>0){
+        hostName = hostName.left(ix);
+    }
     PingHelper::PingResult_Many r;
 
-    // r.ok = false;
-    // r.fromIp = hostName;
-    // r.packSize = 0;
-    // r.icmpSeq = 0;
-    // r.ttl = 0;
-
-    // process beállítása
-    // workaround - https://bugreports.qt.io/browse/QTBUG-2284
-    env.insert("LD_LIBRARY_PATH", "/usr/lib");
-    process.setProcessEnvironment(env);
-    QString path = qApp->applicationDirPath();
-    process.setWorkingDirectory(path);
-
-
     QStringList l = {};
-    QString cmd("for a in {1..254}; do ping -c5 -w5 172.16.1.${a}& done|grep from");
+    QString cmd= QStringLiteral("for a in $(seq 1 254); do ping -c%1 -w%2 %3.${a}& done | grep from").arg(loopMax).arg(time).arg(hostName);
     // process indítása
-    QElapsedTimer t;
-    t.start();
-    process.start(cmd, l);
-    if(!process.waitForStarted()) return r;
-    process.waitForFinished();//timeoutMillis);
+    ProcessHelper::Output o = ProcessHelper::ShellExecute(cmd);
 
-    r._time = t.elapsed();
-    //ProcessHelper::Output o;
-    //auto elapsedMillis = t.elapsed();
-    QByteArray stdOut = process.readAllStandardOutput();
-    //auto stdErr = process.readAllStandardError();
-    int exitCode = process.exitCode();
+    r._elapsedMillis = o.elapsedMillis;
+    r.ok = o.exitCode==0;
+    if(r.ok)
+    {
+        QStringList l = o.stdOut.split("\n");
+        for(auto &s : l)
+        {
+            if(s.isEmpty()) continue;
+            PingHelper::PingModel p;
+            p.Parse(s);
 
-    r.ok = exitCode==0;
-
-    if(r.ok){
-
+            r.append(p);
+        }
     }
 
     return r;
@@ -79,5 +73,47 @@ PingHelper::PingResult_Many PingHelper::Ping_Many(const QHostAddress& host, quin
 
 void PingHelper::PingModel::Parse(const QString &txt)
 {
+    static QRegularExpression regex(R"(([\d\.]+) bytes from ([\d\.]+): .*icmp_seq=(\d+) .*ttl=(\d+) time=([\d\.]+))");
 
+    QRegularExpressionMatch match = regex.match(txt);
+
+    if (match.hasMatch())
+    {
+        packSize = match.captured(1).toUInt();
+        fromIp = match.captured(2);
+        icmpSeq = match.captured(3).toUInt();
+        ttl = match.captured(4).toUInt();
+        time = match.captured(5).toDouble();
+    }
+}
+
+void PingHelper::PingResult_Many::append(const PingModel& m)
+{
+    bool isContains = contains(m);
+    if(!isContains)
+    {
+        _pings.append(m);
+    }
+}
+
+QStringList PingHelper::PingResult_Many::GetHosts()
+{
+    QStringList r;
+    for (auto &a : _pings)
+    {
+        r.append(a.fromIp);
+    }
+    return r;
+}
+
+bool PingHelper::PingResult_Many::contains(const PingModel& m)
+{
+    for(auto&a:_pings)
+    {
+        if(a.fromIp==m.fromIp)
+        {
+            return true;
+        }
+    }
+    return false;
 }

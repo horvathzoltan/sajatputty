@@ -2,6 +2,7 @@
 #include <QDebug>
 
 #include <helpers/filenamehelper.h>
+#include <helpers/networkhelper.h>
 #include <helpers/pinghelper.h>
 #include <helpers/serialsettingshelper.h>
 
@@ -43,6 +44,11 @@ int main(int argc, char *argv[])
         QDir().mkdir(FileNameHelper::terminalDirPath());
     }
 
+   // auto p1 = PingHelper::Ping_1(QHostAddress("192.168.1.254"), 5, 5);
+    auto p2 = PingHelper::Ping_Many(QHostAddress("192.168.1.254"), 5, 5);
+    QStringList p22 = p2.GetHosts();
+    QMap<QString,QSet<int>> p3 = NetworkHelper::FindHost_ByPorts(p22, {22,80});
+
     MainWindow w;
     bool localEcho;
     SerialSettingsHelper::loadSettings(FileNameHelper::settingsPath(), w.mSerial(), &localEcho);
@@ -51,10 +57,6 @@ int main(int argc, char *argv[])
 
     w.show();
     int r =  a.exec();
-
-
-    auto p1 = PingHelper::Ping_1("172.16.1.5", 5, 5);
-
     //SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), w.mSerial());
     return r;
 }

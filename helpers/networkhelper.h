@@ -11,6 +11,7 @@ public:
 
     static QString GetLocalIp();
     static QString GetLocalIp_Wired();
+    static QMap<QString,QSet<int>> FindHost_ByPorts(const QStringList& hosts, const QList<int>& ports);
 };
 
 #endif // NETWORKHELPER_H

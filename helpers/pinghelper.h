@@ -23,15 +23,20 @@ public:
     struct PingResult_1
     {
         PingModel _ping;
-        qreal _time = 0;
+        qreal _elapsedMillis = 0;
         bool ok = false;
     };
 
     struct PingResult_Many
     {
         QList<PingModel> _pings;
-        qreal _time = 0;
-        bool ok = false;
+        qreal _elapsedMillis = 0;
+        bool ok = false;        
+        void append(const PingModel& m);
+
+        QStringList GetHosts();
+    private:
+        bool contains(const PingModel& m);
     };
 
     static PingResult_1 Ping_1(const QHostAddress& host, quint32 timeoutMillis, quint32 loopMax);

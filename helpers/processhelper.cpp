@@ -46,29 +46,31 @@ ProcessHelper::Output ProcessHelper::ShellExecute(const QString &cmd, int timeou
     QElapsedTimer t;
     t.start();
 
-    auto readyR = [&process]()
-    {
-        process.setReadChannel(QProcess::StandardError);
-        while (!process.atEnd()) {
-            QString d = process.readAll();
-            std::cerr << d.toStdString();
-            //o2.append(d.toStdString());
-            //o2.append(d.toStdString());
-        }
-        std::cerr << QStringLiteral("\n").toStdString();
-        //zInfo("opp");
-    };
+    // auto readyR = [&process]()
+    // {
+    //     process.setReadChannel(QProcess::StandardError);
+    //     while (!process.atEnd()) {
+    //         QString d = process.readAll();
+    //         std::cerr << d.toStdString();
+    //         //o2.append(d.toStdString());
+    //         //o2.append(d.toStdString());
+    //     }
+    //     std::cerr << QStringLiteral("\n").toStdString();
+    //     //zInfo("opp");
+    // };
 
     //p->setReadChannel(QProcess::StandardError);
-    QObject::connect(&process, &QProcess::readyReadStandardError,readyR);
+    //QObject::connect(&process, &QProcess::readyReadStandardError,readyR);
 
     //process.start("/bin/sh", {"-c", cmd});
 
-    process.start("/bin/sh", {"-c", cmd});
-    if(!process.waitForStarted()) return{};
-    bool isFinished = process.waitForFinished(timeout_millis);
 
-    QObject::disconnect(&process, &QIODevice::readyRead, nullptr, nullptr);
+    process.start("/bin/sh", {"-c", cmd});
+    if(process.waitForStarted())
+    {
+        bool isFinished = process.waitForFinished(timeout_millis);
+       // QObject::disconnect(&process, &QIODevice::readyRead, nullptr, nullptr);
+    }
 
     ProcessHelper::Output o;
     o.elapsedMillis = t.elapsed();
