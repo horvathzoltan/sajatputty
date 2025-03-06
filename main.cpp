@@ -2,6 +2,7 @@
 #include <QDebug>
 
 #include <helpers/filenamehelper.h>
+#include <helpers/pinghelper.h>
 #include <helpers/serialsettingshelper.h>
 
 #include "mainwindow.h"
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
     _globals._helpers._sysinfoHelper.Init(target, Buildnumber::_value);
 
     QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
-    qDebug()<<sysInfo;
+    qDebug()<<"started: " << sysInfo;
 
     // ha nincs meg a terminal mappa, akkor letrehozzuk
     if(!FileNameHelper::IsDirExists(FileNameHelper::terminalDirPath()))
@@ -46,9 +47,13 @@ int main(int argc, char *argv[])
     bool localEcho;
     SerialSettingsHelper::loadSettings(FileNameHelper::settingsPath(), w.mSerial(), &localEcho);
     w.setLocalEcho(localEcho);
+    w.setStatusBarText(sysInfo);
 
     w.show();
     int r =  a.exec();
+
+
+    auto p1 = PingHelper::Ping_1("172.16.1.5", 5, 5);
 
     //SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), w.mSerial());
     return r;

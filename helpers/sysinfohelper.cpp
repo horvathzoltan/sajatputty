@@ -1,5 +1,7 @@
 #include "sysinfohelper.h"
 
+#include "networkhelper.h"
+
 //started biovitality as zoli@hercules
 //started biovitality as zoli@pif
 
@@ -11,6 +13,7 @@ void SysInfoHelper::Init(const QString &t, const QString &b)
     _user = qgetenv("USER");
     _hostName = QSysInfo::machineHostName();
     isInited = true;
+    _hostIp = NetworkHelper::GetLocalIp_Wired();
 }
 
 bool SysInfoHelper::hasBuildNumber(){
@@ -23,7 +26,7 @@ QString SysInfoHelper::Get_SysInfo()
 {
     if(!isInited) return {};
 
-    QString msg = QStringLiteral("started ")+_target;
+    QString msg = _target;
     if(hasBuildNumber())
     {
         msg+="("+_buildNumber+")";
@@ -33,13 +36,25 @@ QString SysInfoHelper::Get_SysInfo()
         msg += +" as "+_user;
     }
 
-    if(!_hostName.isEmpty())
+
+    if(!_hostIp.isEmpty())
     {
-        msg+="@"+_hostName;
+        msg+="@"+_hostIp;
+
+        if(!_hostName.isEmpty())
+        {
+            msg+="("+_hostName+")";
+        }
+    }
+    else
+    {
+        if(!_hostName.isEmpty())
+        {
+            msg+="@"+_hostName;
+        }
     }
 
     return msg;
 }
-
 
 

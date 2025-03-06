@@ -1,4 +1,5 @@
-QT += widgets serialport
+QT += widgets serialport network
+
 requires(qtConfig(combobox))
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets core gui
 
@@ -12,6 +13,9 @@ SOURCES += \
     helpers/enumhelper.cpp \
     helpers/fileerrors.cpp \
     helpers/filenamehelper.cpp \
+    helpers/networkhelper.cpp \
+    helpers/pinghelper.cpp \
+    helpers/processhelper.cpp \
     helpers/serialsettingshelper.cpp \
     helpers/signalhelper.cpp \
     helpers/sysinfohelper.cpp \
@@ -29,6 +33,9 @@ HEADERS += \
     helpers/enumhelper.h \
     helpers/fileerrors.h \
     helpers/filenamehelper.h \
+    helpers/networkhelper.h \
+    helpers/pinghelper.h \
+    helpers/processhelper.h \
     helpers/serialsettingshelper.h \
     helpers/signalhelper.h \
     helpers/stringify.h \

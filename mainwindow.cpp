@@ -328,3 +328,8 @@ void MainWindow::loadSession()
 
     _console->putData(stxt.toLocal8Bit());
 }
+
+void MainWindow::setStatusBarText(const QString &v)
+{
+    m_ui->statusBar->showMessage(v);
+}

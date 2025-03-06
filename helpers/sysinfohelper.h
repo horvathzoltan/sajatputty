@@ -10,6 +10,7 @@ private:
     QString _buildNumber;
     QString _user;
     QString _hostName;
+    QString _hostIp;
 
     bool hasBuildNumber();
 
@@ -18,6 +19,9 @@ public:
     void Init(const QString& t, const QString& b);
     QString Get_SysInfo();
     QString hostName(){return _hostName;}
+
+private:
+    QString GetLocalIp();
 };
 
 #endif // SYSINFOHELPER_H
