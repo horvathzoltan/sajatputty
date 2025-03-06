@@ -138,6 +138,8 @@ public:
         if(!_console) return;
         _console->setLocalEcho(v);
     };
+
+    void setStatusBarText(const QString& v);
 };
 
 #endif // MAINWINDOW_H
