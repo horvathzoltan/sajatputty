@@ -34,6 +34,9 @@ public:
     QPushButton *pushButton_find;
     QLineEdit *lineEdit_serverIp;
     QLineEdit *lineEdit_serverPort;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *label_findIp;
+    QLineEdit *lineEdit_findPort;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer;
     QPushButton *pushButton_apply;
@@ -60,7 +63,7 @@ public:
         textEdit_messageTemplate = new QTextEdit(SettingsNetworkDialog);
         textEdit_messageTemplate->setObjectName(QString::fromUtf8("textEdit_messageTemplate"));
 
-        formLayout->setWidget(3, QFormLayout::SpanningRole, textEdit_messageTemplate);
+        formLayout->setWidget(4, QFormLayout::SpanningRole, textEdit_messageTemplate);
 
         pushButton_find = new QPushButton(SettingsNetworkDialog);
         pushButton_find->setObjectName(QString::fromUtf8("pushButton_find"));
@@ -76,6 +79,26 @@ public:
         lineEdit_serverPort->setObjectName(QString::fromUtf8("lineEdit_serverPort"));
 
         formLayout->setWidget(1, QFormLayout::FieldRole, lineEdit_serverPort);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        label_findIp = new QLabel(SettingsNetworkDialog);
+        label_findIp->setObjectName(QString::fromUtf8("label_findIp"));
+
+        horizontalLayout_2->addWidget(label_findIp);
+
+        lineEdit_findPort = new QLineEdit(SettingsNetworkDialog);
+        lineEdit_findPort->setObjectName(QString::fromUtf8("lineEdit_findPort"));
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(lineEdit_findPort->sizePolicy().hasHeightForWidth());
+        lineEdit_findPort->setSizePolicy(sizePolicy);
+
+        horizontalLayout_2->addWidget(lineEdit_findPort);
+
+
+        formLayout->setLayout(2, QFormLayout::FieldRole, horizontalLayout_2);
 
 
         verticalLayout->addLayout(formLayout);
@@ -106,6 +129,7 @@ public:
         label_serverIp->setText(QCoreApplication::translate("SettingsNetworkDialog", "serverIp", nullptr));
         label_serverPort->setText(QCoreApplication::translate("SettingsNetworkDialog", "serverPort", nullptr));
         pushButton_find->setText(QCoreApplication::translate("SettingsNetworkDialog", "FindByPort", nullptr));
+        label_findIp->setText(QCoreApplication::translate("SettingsNetworkDialog", "deviceIp", nullptr));
         pushButton_apply->setText(QCoreApplication::translate("SettingsNetworkDialog", "Apply", nullptr));
     } // retranslateUi
 

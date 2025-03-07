@@ -37,6 +37,9 @@ void SettingsNetworkDialog::WriteSettings(const SettingsNetworkVM& p)
     ui->lineEdit_serverIp->setText(p.serverIp);
     ui->lineEdit_serverPort->setText(QString::number(p.serverPort));
     ui->textEdit_messageTemplate->setPlainText(p.messageTemplate);
+
+    ui->lineEdit_findPort->setText(QString::number(p.serverPort));
+    ui->label_findIp->setText(p.deviceIp);
 }
 
 SettingsNetworkDialog::SettingsNetworkVM SettingsNetworkDialog::GetSettings()
@@ -62,17 +65,21 @@ void SettingsNetworkDialog::on_pushButton_find_clicked()
     ui->pushButton_apply->repaint();
     ui->lineEdit_serverIp->repaint();
     ui->lineEdit_serverPort->repaint();
-    SettingsNetworkDialog::SettingsNetworkVM m = GetSettings();
+    //SettingsNetworkDialog::SettingsNetworkVM m = GetSettings();
 
-    QStringList hosts = NetworkHelper::FindHosts_ByPorts(m.serverIp, {m.serverPort});
-
-    if(hosts.count()==1)
+    QString serverIp = ui->label_findIp->text();
+    bool ok;
+    int serverPort = ui->lineEdit_findPort->text().toInt(&ok);
+    if(ok)
     {
-        ui->lineEdit_serverIp->setText(hosts.first());
-    } else{
-        ui->lineEdit_serverIp->clear();
-    }
+        QStringList hosts = NetworkHelper::FindHosts_ByPorts(serverIp, {serverPort});
 
+        if(hosts.count()==1)
+        {
+            ui->lineEdit_serverIp->setText(hosts.first());
+            ui->lineEdit_serverPort->setText(QString::number(serverPort));
+        }
+    }
     ui->pushButton_find->setEnabled(true);
     ui->pushButton_apply->setEnabled(true);
     ui->lineEdit_serverIp->setEnabled(true);

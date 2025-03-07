@@ -385,7 +385,8 @@ void MainWindow::onNoNetwork()
 void MainWindow::SetSettingsDialog_Network()
 {
     SettingsNetworkDialog::SettingsNetworkVM p;
-    p.serverIp = _globals._helpers._sysinfoHelper.hostip();
+    p.deviceIp = _globals._helpers._sysinfoHelper.hostip();
+    p.serverIp = "172.16.1.5";
     p.serverPort = 8081;
     p.messageTemplate = "makk";
 

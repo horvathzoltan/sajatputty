@@ -13,6 +13,7 @@ class SettingsNetworkDialog : public QDialog
 
 public:
     struct SettingsNetworkVM {
+        QString deviceIp;
         QString serverIp;
         int serverPort;
         QString messageTemplate;
