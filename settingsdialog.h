@@ -98,14 +98,13 @@ signals:
     void apply();
 
 private:
-    void fillPortsParameters();
-    void fillPortsInfo();
-    void ReadSettings();
-
-private:
     Ui::SettingsDialog *m_ui = nullptr;
     SettingsVM _currentSettings;
     QIntValidator *m_intValidator = nullptr;
+
+    void fillPortsParameters();
+    void fillPortsInfo();
+    void ReadSettings();
 };
 
 #endif // SETTINGSDIALOG_H

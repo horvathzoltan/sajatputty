@@ -13,7 +13,12 @@ void SysInfoHelper::Init(const QString &t, const QString &b)
     _user = qgetenv("USER");
     _hostName = QSysInfo::machineHostName();
     isInited = true;
-    _hostIp = NetworkHelper::GetLocalIp_Wired();
+    _network = NetworkHelper::GetLocalIp_Wired();
+}
+
+void SysInfoHelper::InitNetwork()
+{
+    _network = NetworkHelper::GetLocalIp_Wired();
 }
 
 bool SysInfoHelper::hasBuildNumber(){
@@ -36,6 +41,7 @@ QString SysInfoHelper::Get_SysInfo()
         msg += +" as "+_user;
     }
 
+    QString _hostIp = _network.ip();
 
     if(!_hostIp.isEmpty())
     {

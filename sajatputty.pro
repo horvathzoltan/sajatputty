@@ -14,6 +14,7 @@ SOURCES += \
     helpers/fileerrors.cpp \
     helpers/filenamehelper.cpp \
     helpers/networkhelper.cpp \
+    helpers/networkmonitor.cpp \
     helpers/pinghelper.cpp \
     helpers/processhelper.cpp \
     helpers/serialsettingshelper.cpp \
@@ -26,7 +27,8 @@ SOURCES += \
     mainwindow.cpp \
     session.cpp \
     settingsdialog.cpp \
-    console.cpp
+    console.cpp \
+    settingsnetworkdialog.cpp
      #ssd1306.cpp
 
 HEADERS += \
@@ -34,6 +36,7 @@ HEADERS += \
     helpers/fileerrors.h \
     helpers/filenamehelper.h \
     helpers/networkhelper.h \
+    helpers/networkmonitor.h \
     helpers/pinghelper.h \
     helpers/processhelper.h \
     helpers/serialsettingshelper.h \
@@ -46,12 +49,14 @@ HEADERS += \
     mainwindow.h \
     session.h \
     settingsdialog.h \
-    console.h
+    console.h \
+    settingsnetworkdialog.h
      #ssd1306.h
 
 FORMS += \
     mainwindow.ui \
-    settingsdialog.ui
+    settingsdialog.ui \
+    settingsnetworkdialog.ui
 
 RESOURCES += \
     terminal.qrc

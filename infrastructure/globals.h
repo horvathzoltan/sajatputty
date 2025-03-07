@@ -2,6 +2,8 @@
 #define GLOBALS_H
 
 #include "../helpers/sysinfohelper.h"
+
+#include <helpers/networkmonitor.h>
 //#include "helpers/filenamehelper.h"
 
 class Helpers{
@@ -13,8 +15,8 @@ class Globals
 {
 public:
 
-    Helpers _helpers;
-
+    Helpers _helpers;    
+    NetworkMonitor _networkMonitor;
 public:
     Globals(){};
 

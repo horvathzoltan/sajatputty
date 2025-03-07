@@ -3,6 +3,7 @@
 
 #include <helpers/filenamehelper.h>
 #include <helpers/networkhelper.h>
+#include <helpers/networkmonitor.h>
 #include <helpers/pinghelper.h>
 #include <helpers/serialsettingshelper.h>
 
@@ -34,7 +35,6 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     _globals._helpers._sysinfoHelper.Init(target, Buildnumber::_value);
-
     QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
     qDebug()<<"started: " << sysInfo;
 
@@ -44,16 +44,35 @@ int main(int argc, char *argv[])
         QDir().mkdir(FileNameHelper::terminalDirPath());
     }
 
-   // auto p1 = PingHelper::Ping_1(QHostAddress("192.168.1.254"), 5, 5);
-    auto p2 = PingHelper::Ping_Many(QHostAddress("192.168.1.254"), 5, 5);
-    QStringList p22 = p2.GetHosts();
-    QMap<QString,QSet<int>> p3 = NetworkHelper::FindHost_ByPorts(p22, {22,80});
+    // 1 ping
+    // auto p1 = PingHelper::Ping_1(QHostAddress("192.168.1.254"), 5, 5);
+
+    // több ping
+    // QHostAddress hostAddress(_globals._helpers._sysinfoHelper.hostip());
+    // auto p2 = PingHelper::Ping_Many(hostAddress, 5, 5);
+    // QStringList p22 = p2.GetHosts();
+    // QMap<QString,QSet<int>> p3 = NetworkHelper::FindHost_ByPorts(p22, {22,80});
+
+    // QStringList p3txt = NetworkHelper::HostsByPorts_ToString(p3);
+    // for(auto&pt:p3txt)
+    // {
+    //     qDebug()<<pt;
+    // }
 
     MainWindow w;
     bool localEcho;
     SerialSettingsHelper::loadSettings(FileNameHelper::settingsPath(), w.mSerial(), &localEcho);
     w.setLocalEcho(localEcho);
-    w.setStatusBarText(sysInfo);
+    //w.setStatusBarText(sysInfo);
+
+    auto nix = _globals._helpers._sysinfoHelper.networkInterfaceIx();
+    _globals._networkMonitor.setInterfaceIndex(nix);
+
+    QObject::connect(&_globals._networkMonitor, &NetworkMonitor::ConnectedAction, &w, &MainWindow::onNetworkConnected);
+    QObject::connect(&_globals._networkMonitor, &NetworkMonitor::DisconnectedAction, &w, &MainWindow::onNetworkDisconnected);
+    QObject::connect(&_globals._networkMonitor, &NetworkMonitor::NoNetworkAction, &w, &MainWindow::onNoNetwork);
+
+    _globals._networkMonitor.start();
 
     w.show();
     int r =  a.exec();

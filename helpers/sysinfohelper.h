@@ -1,6 +1,8 @@
 #ifndef SYSINFOHELPER_H
 #define SYSINFOHELPER_H
 
+#include "networkhelper.h"
+
 #include <QString>
 
 class SysInfoHelper
@@ -10,16 +12,19 @@ private:
     QString _buildNumber;
     QString _user;
     QString _hostName;
-    QString _hostIp;
+    NetworkHelper::NetworkModel _network;
 
     bool hasBuildNumber();
 
     bool isInited = false;
 public:
     void Init(const QString& t, const QString& b);
+    void InitNetwork();
     QString Get_SysInfo();
     QString hostName(){return _hostName;}
-
+    QHostAddress hostAddress(){return _network.hostAddress();}
+    QString hostip(){return _network.ip();}
+    int networkInterfaceIx(){return _network.interfaceIx();}
 private:
     QString GetLocalIp();
 };

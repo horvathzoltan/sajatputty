@@ -89,6 +89,12 @@ SettingsDialog::~SettingsDialog()
     delete m_ui;
 }
 
+void SettingsDialog::applyButtonClicked()
+{
+    ReadSettings();
+    emit apply();
+    hide();
+}
 
 void SettingsDialog::WriteSettings(const SettingsVM& p)
 {
@@ -117,12 +123,7 @@ void SettingsDialog::showPortInfo(int idx)
     m_ui->pidLabel->setText(tr("Product Identifier: %1").arg(list.count() > 6 ? list.at(6) : tr(blankString)));
 }
 
-void SettingsDialog::applyButtonClicked()
-{
-    ReadSettings();
-    emit apply();
-    hide();
-}
+
 
 void SettingsDialog::checkCustomBaudRatePolicy(int idx)
 {

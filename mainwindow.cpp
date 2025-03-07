@@ -51,11 +51,14 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "console.h"
+
 #include "settingsdialog.h"
+#include "settingsnetworkdialog.h"
+
 //#include "enumhelper.h"
 //#include "enumhelper.h"
 //#include "session.h"
+#include "console.h"
 
 #include <QDateTime>
 #include <QFileDialog>
@@ -75,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_status(new QLabel),
     _console(new Console),
     _settingsDialog(new SettingsDialog),
+    _networkSettingsDialog(new SettingsNetworkDialog),
     _serial(new QSerialPort(this))
 {
     m_ui->setupUi(this);
@@ -95,8 +99,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
     connect(_console, &Console::getData, this, &MainWindow::writeData);
 
+    // settings apply
     connect(_settingsDialog, &SettingsDialog::apply, this, &MainWindow::process_Apply);
-    //SetSettingsDialog();
+    // networkSettings apply
+    connect(_networkSettingsDialog, &SettingsNetworkDialog::apply, this, &MainWindow::process_NetworkApply);
 }
 
 /*
@@ -121,6 +127,8 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionAboutQt, &QAction::triggered, this, &MainWindow::process_AboutQt);
     /*app*/
     connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::process_Close);
+    /*settings_network*/
+    connect(m_ui->actionConfigure_Network, &QAction::triggered, this, &MainWindow::process_ActionConfigureNetwork);
 }
 
 void MainWindow::process_ActionConfigure()
@@ -158,6 +166,12 @@ void MainWindow::process_About()
 void MainWindow::process_AboutQt()
 {
     QApplication::aboutQt();
+}
+
+void MainWindow::process_ActionConfigureNetwork()
+{
+    SetSettingsDialog_Network();
+    _networkSettingsDialog->show();
 }
 
 /*
@@ -333,3 +347,63 @@ void MainWindow::setStatusBarText(const QString &v)
 {
     m_ui->statusBar->showMessage(v);
 }
+
+/**/
+
+void MainWindow::onNetworkConnected()
+{
+    _globals._helpers._sysinfoHelper.InitNetwork();
+    QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
+    setStatusBarText(sysInfo + " connected");
+}
+
+void MainWindow::onNetworkDisconnected()
+{
+    //_globals._helpers._sysinfoHelper.InitNetwork();
+    QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
+    setStatusBarText(sysInfo + " disconnected");
+}
+
+void MainWindow::onNoNetwork()
+{
+    // ha nincs hálózat, megpróbáljuk keresni
+    _globals._helpers._sysinfoHelper.InitNetwork();
+    int nix = _globals._helpers._sysinfoHelper.networkInterfaceIx();
+    bool ok = nix>0;
+    QString msg = ok?"connected":"no network";
+    if(ok)
+    {
+        _globals._networkMonitor.setInterfaceIndex(nix);
+    }
+
+    QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
+    setStatusBarText(sysInfo + " "+ msg);
+}
+
+/*network_settings*/
+
+void MainWindow::SetSettingsDialog_Network()
+{
+    SettingsNetworkDialog::SettingsNetworkVM p;
+    p.serverIp = _globals._helpers._sysinfoHelper.hostip();
+    p.serverPort = 8081;
+    p.messageTemplate = "makk";
+
+    _networkSettingsDialog->WriteSettings(p);
+}
+
+void MainWindow::process_NetworkApply()
+{
+    SettingsNetworkDialog::SettingsNetworkVM p = _networkSettingsDialog->settings();
+    // _serial->setPortName(p.portName);
+    // _serial->setBaudRate(p.baudRate);
+    // _serial->setDataBits(p.dataBits);
+    // _serial->setParity(p.parity);
+    // _serial->setStopBits(p.stopBits);
+    // _serial->setFlowControl(p.flowControl);
+
+    // _console->setLocalEcho(p.localEchoEnabled);
+
+    SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), _serial, _console->localEcho());
+}
+

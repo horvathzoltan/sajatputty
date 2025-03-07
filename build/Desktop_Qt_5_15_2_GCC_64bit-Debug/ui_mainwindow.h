@@ -34,6 +34,7 @@ public:
     QAction *actionSaveSession;
     QAction *actionLoadSettings;
     QAction *actionSaveSettings;
+    QAction *actionConfigure_Network;
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     QToolBar *mainToolBar;
@@ -93,6 +94,9 @@ public:
         actionSaveSettings->setObjectName(QString::fromUtf8("actionSaveSettings"));
         actionSaveSettings->setIcon(icon6);
         actionSaveSettings->setMenuRole(QAction::TextHeuristicRole);
+        actionConfigure_Network = new QAction(MainWindow);
+        actionConfigure_Network->setObjectName(QString::fromUtf8("actionConfigure_Network"));
+        actionConfigure_Network->setIcon(icon2);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         verticalLayout = new QVBoxLayout(centralWidget);
@@ -114,10 +118,11 @@ public:
         mainToolBar->addAction(actionLoadSettings);
         mainToolBar->addAction(actionSaveSettings);
         mainToolBar->addSeparator();
-        mainToolBar->addAction(actionClear);
+        mainToolBar->addAction(actionConfigure_Network);
         mainToolBar->addAction(actionLoadSession);
         mainToolBar->addAction(actionSaveSession);
         mainToolBar->addSeparator();
+        mainToolBar->addAction(actionClear);
 
         retranslateUi(MainWindow);
 
@@ -183,6 +188,13 @@ public:
 #if QT_CONFIG(tooltip)
         actionSaveSettings->setToolTip(QCoreApplication::translate("MainWindow", "Save settings", nullptr));
 #endif // QT_CONFIG(tooltip)
+        actionConfigure_Network->setText(QCoreApplication::translate("MainWindow", "&ConfigureNetwork", nullptr));
+#if QT_CONFIG(tooltip)
+        actionConfigure_Network->setToolTip(QCoreApplication::translate("MainWindow", "Configure network", nullptr));
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(shortcut)
+        actionConfigure_Network->setShortcut(QCoreApplication::translate("MainWindow", "Shift+N", nullptr));
+#endif // QT_CONFIG(shortcut)
     } // retranslateUi
 
 };

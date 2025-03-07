@@ -30,10 +30,11 @@
    <addaction name="actionLoadSettings"/>
    <addaction name="actionSaveSettings"/>
    <addaction name="separator"/>
-   <addaction name="actionClear"/>
+   <addaction name="actionConfigure_Network"/>
    <addaction name="actionLoadSession"/>
    <addaction name="actionSaveSession"/>
    <addaction name="separator"/>
+   <addaction name="actionClear"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout">
@@ -182,6 +183,21 @@
    </property>
    <property name="menuRole">
     <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionConfigure_Network">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/settings.png</normaloff>:/images/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;ConfigureNetwork</string>
+   </property>
+   <property name="toolTip">
+    <string>Configure network</string>
+   </property>
+   <property name="shortcut">
+    <string>Shift+N</string>
    </property>
   </action>
  </widget>

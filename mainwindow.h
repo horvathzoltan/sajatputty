@@ -62,16 +62,16 @@
 #include <QDateTime>
 #include "console.h"
 
-#define PRG_NAME        "oled_demo"
-#define PRG_VERSION     "1.1"
+//#define PRG_NAME        "oled_demo"
+//#define PRG_VERSION     "1.1"
 
-#define NUMFLAKES 10
-#define XPOS 0
-#define YPOS 1
-#define DELTAY 2
+//#define NUMFLAKES 10
+//#define XPOS 0
+//#define YPOS 1
+//#define DELTAY 2
 
-#define LOGO16_GLCD_HEIGHT 16
-#define LOGO16_GLCD_WIDTH  16
+//#define LOGO16_GLCD_HEIGHT 16
+//#define LOGO16_GLCD_WIDTH  16
 
 QT_BEGIN_NAMESPACE
 
@@ -85,6 +85,7 @@ QT_END_NAMESPACE
 
 class Console;
 class SettingsDialog;
+class SettingsNetworkDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -109,6 +110,7 @@ private slots:
     void handleError(QSerialPort::SerialPortError error);
 
     void process_ActionConfigure();
+    void process_ActionConfigureNetwork();
     void process_ActionClear();
     void process_OpenSerialPort();
     void process_CloseSerialPort();
@@ -117,6 +119,12 @@ private slots:
     void process_AboutQt();
 
     void process_Apply();
+    void process_NetworkApply();
+
+public slots:
+    void onNetworkConnected();
+    void onNetworkDisconnected();
+    void onNoNetwork();
 
 private:
     void initActionsConnections();
@@ -127,10 +135,12 @@ private:
     QLabel *m_status = nullptr;
     Console *_console = nullptr;
     SettingsDialog* _settingsDialog = nullptr;
+    SettingsNetworkDialog* _networkSettingsDialog = nullptr;
     QSerialPort *_serial = nullptr;
     SessionLog _sessionLog;
 
     void SetSettingsDialog();
+    void SetSettingsDialog_Network();
 public:
     QSerialPort* mSerial(){ return _serial; }
     void setLocalEcho(bool v)
