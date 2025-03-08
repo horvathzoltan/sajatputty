@@ -99,15 +99,15 @@ private slots:
     void openSerialPort();
     void closeSerialPort();
     void about();
-    void writeData(const QByteArray &data);
-    void readData();
+    void writeData_console(const QByteArray &data);
+    void readData_serial();
     void saveSettings();
     void loadSettings();
     void saveSession();
     void loadSession();
     void clear();
 
-    void handleError(QSerialPort::SerialPortError error);
+    void handleError_serial(QSerialPort::SerialPortError error);
 
     void process_ActionConfigure();
     void process_ActionConfigureNetwork();

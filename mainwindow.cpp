@@ -95,9 +95,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initActionsConnections();
 
-    connect(_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError);
-    connect(_serial, &QSerialPort::readyRead, this, &MainWindow::readData);
-    connect(_console, &Console::getData, this, &MainWindow::writeData);
+    connect(_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError_serial);
+    connect(_serial, &QSerialPort::readyRead, this, &MainWindow::readData_serial);
+    connect(_console, &Console::getData, this, &MainWindow::writeData_console);
 
     // settings apply
     connect(_settingsDialog, &SettingsDialog::apply, this, &MainWindow::process_Apply);
@@ -267,38 +267,6 @@ void MainWindow::about()
                           "using Qt, with a menu bar, toolbars, and a status bar."));
 }
 
-void MainWindow::writeData(const QByteArray &data)
-{
-    // amit küldünk data
-    // ha van echo, kirakjuk a konzolra
-    if (_console->localEcho())
-    {
-        _console->putData(data);
-    }
-    // kirakjuk a logba is
-    _sessionLog.append({SessionLog::Write, data});
-    // majd a portra is
-    _serial->write(data);
-}
-
-void MainWindow::readData()
-{
-    const QByteArray data = _serial->readAll();
-    // ami jött data
-    // kirakjuk a konzolra
-    _console->putData(data);
-    // kirakjuk a logba is
-    _sessionLog.append({SessionLog::Read, data});
-}
-
-void MainWindow::handleError(QSerialPort::SerialPortError error)
-{
-    if (error == QSerialPort::ResourceError) {
-        QMessageBox::critical(this, tr("Critical Error"), _serial->errorString());
-        closeSerialPort();
-    }
-}
-
 void MainWindow::clear()
 {
     _sessionLog.clear();
@@ -408,3 +376,38 @@ void MainWindow::process_NetworkApply()
     SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), _serial, _console->localEcho());
 }
 
+/*SERIAL*/
+
+void MainWindow::writeData_console(const QByteArray &data)
+{
+    // amit küldünk data
+    // ha van echo, kirakjuk a konzolra
+    if (_console->localEcho())
+    {
+        _console->putData(data);
+    }
+    // kirakjuk a logba is
+    _sessionLog.append({SessionLog::Write, data});
+    // majd a portra is
+    _serial->write(data);
+}
+
+void MainWindow::readData_serial()
+{
+    const QByteArray data = _serial->readAll();
+    // ami jött data
+    // kirakjuk a konzolra
+    _console->putData(data);
+    // kirakjuk a logba is
+    _sessionLog.append({SessionLog::Read, data});
+}
+
+/*CONSOLE*/
+
+void MainWindow::handleError_serial(QSerialPort::SerialPortError error)
+{
+    if (error == QSerialPort::ResourceError) {
+        QMessageBox::critical(this, tr("Critical Error"), _serial->errorString());
+        closeSerialPort();
+    }
+}
