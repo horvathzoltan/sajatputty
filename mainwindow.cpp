@@ -224,7 +224,7 @@ void MainWindow::openSerialPort(){
 
         showStatusMessage(tr("Open error"));
     }
-    _sessionLog.clear();
+    _globals._sessionLog.clear();
 }
 // a serialsettingshelper beolvassa fájlból a m_serial-ba
 
@@ -249,7 +249,7 @@ void MainWindow::about()
 
 void MainWindow::clear()
 {
-    _sessionLog.clear();
+    _globals._sessionLog.clear();
     _globals._console.clear();
 }
 
@@ -282,13 +282,13 @@ void MainWindow::saveSession()
     auto fn = QFileDialog::getSaveFileName(this, tr("Save Session"), "/home/pi/terminal_logs", tr(""));
     QString stxt = _globals._serialManager.MSerial_ToString(); //SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
     QString ctxt = _globals._console.toPlainText();
-    _sessionLog.saveSession(fn, stxt, ctxt);
+    _globals._sessionLog.saveSession(fn, stxt, ctxt);
 }
 
 void MainWindow::loadSession()
 {
     auto fn  = QFileDialog::getOpenFileName(this, tr("Load Session"), "/home/pi/terminal_logs", tr(""));
-    QString stxt = _sessionLog.loadSession(fn);
+    QString stxt = _globals._sessionLog.loadSession(fn);
 
     _globals._console.putData(stxt.toLocal8Bit());
 }
@@ -370,7 +370,7 @@ void MainWindow::writeData_console(const QByteArray &data)
         _globals._console.putData(data);
     }
     // kirakjuk a logba is
-    _sessionLog.append({SessionLog::Write, data});
+    _globals._sessionLog.append({SessionLog::Write, data});
     // majd a portra is
     //_serial->write(data);
     _globals._serialManager.writeData(data);
@@ -383,7 +383,7 @@ void MainWindow::readData_serial()
     // kirakjuk a konzolra
     _globals._console.putData(data);
     // kirakjuk a logba is
-    _sessionLog.append({SessionLog::Read, data});
+    _globals._sessionLog.append({SessionLog::Read, data});
 }
 
 /*CONSOLE*/
