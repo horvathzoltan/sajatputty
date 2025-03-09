@@ -50,7 +50,8 @@ HEADERS += \
     session.h \
     settingsdialog.h \
     console.h \
-    settingsnetworkdialog.h
+    settingsnetworkdialog.h \
+    viewmodels/serialsettingsvm.h
      #ssd1306.h
 
 FORMS += \

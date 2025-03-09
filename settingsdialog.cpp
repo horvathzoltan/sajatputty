@@ -96,7 +96,7 @@ void SettingsDialog::applyButtonClicked()
     hide();
 }
 
-void SettingsDialog::WriteSettings(const SettingsVM& p)
+void SettingsDialog::WriteSettings(const SerialSettingsVM& p)
 {
     _currentSettings = p;
 

@@ -76,15 +76,15 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::MainWindow),
     m_status(new QLabel),
-    _console(new Console),
+    //_console(new Console),
     _settingsDialog(new SettingsDialog),
-    _networkSettingsDialog(new SettingsNetworkDialog),
-    _serial(new QSerialPort(this))
+    _networkSettingsDialog(new SettingsNetworkDialog)
+
 {
     m_ui->setupUi(this);
     m_ui->mainToolBar->setIconSize(QSize(80, 80));
-    _console->setEnabled(true);
-    setCentralWidget(_console);
+    _globals._console.setEnabled(true);
+    setCentralWidget(&_globals._console);
 
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
@@ -95,9 +95,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     initActionsConnections();
 
-    connect(_serial, &QSerialPort::errorOccurred, this, &MainWindow::handleError_serial);
-    connect(_serial, &QSerialPort::readyRead, this, &MainWindow::readData_serial);
-    connect(_console, &Console::getData, this, &MainWindow::writeData_console);
+    connect(_globals.serial_ptr(), &QSerialPort::errorOccurred, this, &MainWindow::handleError_serial);
+    connect(_globals.serial_ptr(), &QSerialPort::readyRead, this, &MainWindow::readData_serial);
+    //_globals._serialManager.connect(this, &MainWindow::handleError_serial, &MainWindow::readData_serial);
+    connect(&_globals._console, &Console::getData, this, &MainWindow::writeData_console);
 
     // settings apply
     connect(_settingsDialog, &SettingsDialog::apply, this, &MainWindow::process_Apply);
@@ -139,7 +140,7 @@ void MainWindow::process_ActionConfigure()
 
 void MainWindow::process_ActionClear()
 {
-    _console->clear();
+    _globals._console.clear();
     clear();
 }
 
@@ -180,34 +181,25 @@ void MainWindow::process_ActionConfigureNetwork()
 
 void MainWindow::process_Apply()
 {
-    SettingsDialog::SettingsVM p = _settingsDialog->settings();
-    _serial->setPortName(p.portName);
-    _serial->setBaudRate(p.baudRate);
-    _serial->setDataBits(p.dataBits);
-    _serial->setParity(p.parity);
-    _serial->setStopBits(p.stopBits);
-    _serial->setFlowControl(p.flowControl);
+    SerialSettingsVM p = _settingsDialog->settings();
+    // _serial->setPortName(p.portName);
+    // _serial->setBaudRate(p.baudRate);
+    // _serial->setDataBits(p.dataBits);
+    // _serial->setParity(p.parity);
+    // _serial->setStopBits(p.stopBits);
+    // _serial->setFlowControl(p.flowControl);
 
-    _console->setLocalEcho(p.localEchoEnabled);
+    _globals._serialManager.setSerialSettings(p);
 
-    SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), _serial, _console->localEcho());
+    _globals._console.setLocalEcho(p.localEchoEnabled);
+
+    _globals._serialManager.saveSettings();
 }
 
 void MainWindow::SetSettingsDialog()
 {
-    SettingsDialog::SettingsVM p;
-    p.portName = _serial->portName();
 
-    qint32 baudRate_int = _serial->baudRate();
-    QSerialPort::BaudRate baudRate = static_cast<QSerialPort::BaudRate>(baudRate_int);
-    p.baudRate = baudRate;
-
-    p.dataBits = _serial->dataBits();
-    p.parity = _serial->parity();
-    p.stopBits = _serial->stopBits();
-    p.flowControl = _serial->flowControl();
-    p.localEchoEnabled = false;
-
+    SerialSettingsVM p = _globals._serialManager.getSerialSettings();
     _settingsDialog->WriteSettings(p);
 }
 
@@ -218,39 +210,27 @@ MainWindow::~MainWindow()
     delete m_ui;
 }
 
-// a serialsettingshelper beolvassa fájlból a m_serial-ba
-void MainWindow::openSerialPort()
-{
-    //const SettingsDialog::SettingsVM p = _settingsDialog->settingsVM();
-    // m_serial->setPortName(p.name);
-    // m_serial->setBaudRate(p.baudRate);
-    // m_serial->setDataBits(p.dataBits);
-    // m_serial->setParity(p.parity);
-    // m_serial->setStopBits(p.stopBits);
-    // m_serial->setFlowControl(p.flowControl);
-    if (_serial->open(QIODevice::ReadWrite)) {
-        //_console->setEnabled(true);
-        //_console->setLocalEchoEnabled(_localEchoEnabled);
-        m_ui->actionConnect->setEnabled(false);
-        m_ui->actionDisconnect->setEnabled(true);
-        m_ui->actionConfigure->setEnabled(false);
+void MainWindow::openSerialPort(){
+    bool ok = _globals._serialManager.openSerialPort();
+    if(ok){
+    m_ui->actionConnect->setEnabled(false);
+    m_ui->actionDisconnect->setEnabled(true);
+    m_ui->actionConfigure->setEnabled(false);
+    QString msg = _globals._serialManager.MSerial_ToString(); //SerialSettingsHelper::MSerial_ToString(_globals._serial, _console->localEcho());
+    showStatusMessage("Connected:"+msg);
 
-        QString msg = SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
-        showStatusMessage("Connected:"+msg);
-    } else {
-        QMessageBox::critical(this, tr("Error"), _serial->errorString());
+    } else{
+        QMessageBox::critical(this, tr("Error"), _globals._serialManager.errorString());
 
         showStatusMessage(tr("Open error"));
     }
-
-    //logd = new QList<struct logData>();
     _sessionLog.clear();
 }
+// a serialsettingshelper beolvassa fájlból a m_serial-ba
 
 void MainWindow::closeSerialPort()
 {
-    if (_serial->isOpen())
-        _serial->close();
+    _globals._serialManager.closeSerialPort();
     //_console->setEnabled(false);
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
@@ -270,7 +250,7 @@ void MainWindow::about()
 void MainWindow::clear()
 {
     _sessionLog.clear();
-    _console->clear();
+    _globals._console.clear();
 }
 
 void MainWindow::showStatusMessage(const QString &message)
@@ -284,22 +264,24 @@ void MainWindow::showStatusMessage(const QString &message)
 void MainWindow::saveSettings()
 {
     auto fn = QFileDialog::getSaveFileName(this, tr("Save Setting"), "/home/pi/terminal_settings", tr(""));
-    SerialSettingsHelper::saveSettings(fn, _serial, _console->localEcho());
+    //SerialSettingsHelper::saveSettings(fn, _serial, _console->localEcho());
+    _globals._serialManager.saveSettings();
 }
 
 void MainWindow::loadSettings()
 {
     auto fn  = QFileDialog::getOpenFileName(this, tr("Load Setting"), "/home/pi/terminal_settings", tr(""));
-    bool localEcho;
-    SerialSettingsHelper::loadSettings(fn, _serial, &localEcho);
-    _console->setLocalEcho(localEcho);
+    //bool localEcho;
+    //SerialSettingsHelper::loadSettings(fn, _serial, &localEcho);
+    _globals._serialManager.loadSettings(fn);
+    //_console->setLocalEcho(localEcho);
 }
 
 void MainWindow::saveSession()
 {
     auto fn = QFileDialog::getSaveFileName(this, tr("Save Session"), "/home/pi/terminal_logs", tr(""));
-    QString stxt = SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
-    QString ctxt = _console->toPlainText();
+    QString stxt = _globals._serialManager.MSerial_ToString(); //SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
+    QString ctxt = _globals._console.toPlainText();
     _sessionLog.saveSession(fn, stxt, ctxt);
 }
 
@@ -308,7 +290,7 @@ void MainWindow::loadSession()
     auto fn  = QFileDialog::getOpenFileName(this, tr("Load Session"), "/home/pi/terminal_logs", tr(""));
     QString stxt = _sessionLog.loadSession(fn);
 
-    _console->putData(stxt.toLocal8Bit());
+    _globals._console.putData(stxt.toLocal8Bit());
 }
 
 void MainWindow::setStatusBarText(const QString &v)
@@ -373,7 +355,8 @@ void MainWindow::process_NetworkApply()
 
     // _console->setLocalEcho(p.localEchoEnabled);
 
-    SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), _serial, _console->localEcho());
+    //SerialSettingsHelper::saveSettings(FileNameHelper::settingsPath(), _serial, _console->localEcho());
+    _globals._serialManager.saveSettings();
 }
 
 /*SERIAL*/
@@ -382,22 +365,23 @@ void MainWindow::writeData_console(const QByteArray &data)
 {
     // amit küldünk data
     // ha van echo, kirakjuk a konzolra
-    if (_console->localEcho())
+    if (_globals._console.localEcho())
     {
-        _console->putData(data);
+        _globals._console.putData(data);
     }
     // kirakjuk a logba is
     _sessionLog.append({SessionLog::Write, data});
     // majd a portra is
-    _serial->write(data);
+    //_serial->write(data);
+    _globals._serialManager.writeData(data);
 }
 
 void MainWindow::readData_serial()
 {
-    const QByteArray data = _serial->readAll();
+    const QByteArray data = _globals._serialManager.readAll();
     // ami jött data
     // kirakjuk a konzolra
-    _console->putData(data);
+    _globals._console.putData(data);
     // kirakjuk a logba is
     _sessionLog.append({SessionLog::Read, data});
 }
@@ -407,7 +391,7 @@ void MainWindow::readData_serial()
 void MainWindow::handleError_serial(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {
-        QMessageBox::critical(this, tr("Critical Error"), _serial->errorString());
+        QMessageBox::critical(this, tr("Critical Error"), _globals._serialManager.errorString());
         closeSerialPort();
     }
 }

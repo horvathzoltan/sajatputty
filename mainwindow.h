@@ -133,21 +133,15 @@ private:
 private:
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
-    Console *_console = nullptr;
+    //Console *_console = nullptr;
     SettingsDialog* _settingsDialog = nullptr;
     SettingsNetworkDialog* _networkSettingsDialog = nullptr;
-    QSerialPort *_serial = nullptr;
-    SessionLog _sessionLog;
+    //SessionLog _sessionLog;
 
     void SetSettingsDialog();
     void SetSettingsDialog_Network();
 public:
-    QSerialPort* mSerial(){ return _serial; }
-    void setLocalEcho(bool v)
-    {
-        if(!_console) return;
-        _console->setLocalEcho(v);
-    };
+    //QSerialPort* mSerial(){ return _serial; }
 
     void setStatusBarText(const QString& v);
 };

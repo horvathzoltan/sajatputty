@@ -52,6 +52,8 @@
 #ifndef SETTINGSDIALOG_H
 #define SETTINGSDIALOG_H
 
+#include "viewmodels/serialsettingsvm.h"
+
 #include <QDialog>
 #include <QSerialPort>
 
@@ -65,26 +67,21 @@ class QIntValidator;
 
 QT_END_NAMESPACE
 
+
+
+
 class SettingsDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    struct SettingsVM {
-        QString portName;
-        QSerialPort::BaudRate baudRate;        
-        QSerialPort::DataBits dataBits;
-        QSerialPort::StopBits stopBits;
-        QSerialPort::Parity parity;
-        QSerialPort::FlowControl flowControl;
-        bool localEchoEnabled;
-    };
+
 
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
-    SettingsVM settings(){return _currentSettings;}
-    void WriteSettings(const SettingsVM &);
+    SerialSettingsVM settings(){return _currentSettings;}
+    void WriteSettings(const SerialSettingsVM &);
 
     //void SetSettingsDialog(SettingsVM settings);
 private slots:
@@ -99,7 +96,7 @@ signals:
 
 private:
     Ui::SettingsDialog *m_ui = nullptr;
-    SettingsVM _currentSettings;
+    SerialSettingsVM _currentSettings;
     QIntValidator *m_intValidator = nullptr;
 
     void fillPortsParameters();
