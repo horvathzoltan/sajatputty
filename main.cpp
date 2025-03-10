@@ -60,10 +60,11 @@ int main(int argc, char *argv[])
     // }
 
     MainWindow w;
-    //bool localEcho;
-    //SerialSettingsHelper::loadSettings(FileNameHelper::settingsPath(), _globals._serial, &localEcho);
-    _globals._serialManager.loadSettings(FileNameHelper::settingsPath());
-    //w.setLocalEcho(localEcho);
+    bool localEcho;
+
+    QString fn = FileNameHelper::settingsPath();
+    _globals._serialManager.loadSettings(fn,&localEcho);
+    w.setLocalEcho(localEcho);
     //w.setStatusBarText(sysInfo);
 
     auto nix = _globals._helpers._sysinfoHelper.networkInterfaceIx();

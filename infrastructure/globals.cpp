@@ -50,23 +50,20 @@ void SerialManager::closeSerialPort()
 }
 
 
-QString SerialManager::MSerial_ToString()
+QString SerialManager::MSerial_ToString(bool localEcho)
 {
-    return SerialSettingsHelper::MSerial_ToString(&_serial, _globals._console.localEcho());
+    return SerialSettingsHelper::MSerial_ToString(&_serial, localEcho);
 }
 
-void SerialManager::saveSettings()
+void SerialManager::saveSettings(const QString& fn, bool localEcho)
 {
-    QString fn = FileNameHelper::settingsPath();
-    SerialSettingsHelper::saveSettings(fn, &_serial,
-                                       _globals._console.localEcho());
+    //QString fn = FileNameHelper::settingsPath();
+    SerialSettingsHelper::saveSettings(fn, &_serial,localEcho);
 }
 
-void SerialManager::loadSettings(const QString&fn )
+void SerialManager::loadSettings(const QString&fn, bool* localEcho )
 {
-    bool localEcho;
-    SerialSettingsHelper::loadSettings(fn, &_serial, &localEcho);
-    _globals._console.setLocalEcho(localEcho);
+    SerialSettingsHelper::loadSettings(fn, &_serial, localEcho);
 }
 
 void SerialManager::writeData(const QByteArray &data)

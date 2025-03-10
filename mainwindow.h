@@ -118,7 +118,7 @@ private slots:
     void process_About();
     void process_AboutQt();
 
-    void process_Apply();
+    void on_SettingsDialogApply();
     void process_NetworkApply();
 
 public slots:
@@ -133,16 +133,15 @@ private:
 private:
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;
-    //Console *_console = nullptr;
+    Console *_console = nullptr;
     SettingsDialog* _settingsDialog = nullptr;
     SettingsNetworkDialog* _networkSettingsDialog = nullptr;
-    //SessionLog _sessionLog;
 
     void SetSettingsDialog();
     void SetSettingsDialog_Network();
-public:
-    //QSerialPort* mSerial(){ return _serial; }
 
+public:    
+    void setLocalEcho(bool v){_console->setLocalEcho(v);};
     void setStatusBarText(const QString& v);
 };
 

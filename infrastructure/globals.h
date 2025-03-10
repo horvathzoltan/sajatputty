@@ -20,7 +20,6 @@ public:
 class SerialManager{
 private:
     QSerialPort _serial;
-
 public:
     void setSerialSettings(const SerialSettingsVM &p);
     SerialSettingsVM getSerialSettings();
@@ -28,9 +27,9 @@ public:
     void closeSerialPort();
     QString errorString(){return _serial.errorString();}
 
-    QString MSerial_ToString();
-    void saveSettings();
-    void loadSettings(const QString&fn);
+    QString MSerial_ToString(bool localEcho);
+    void saveSettings(const QString& fn, bool localEcho);
+    void loadSettings(const QString&fn, bool* localEcho);
     void writeData(const QByteArray &data);
     QByteArray readAll();
 
@@ -39,13 +38,18 @@ public:
     SerialManager();
 };
 
+class NetworkManager{
+public:
+    void saveSettings(){};
+};
+
 class Globals
 {
 public:        
     Helpers _helpers;    
     NetworkMonitor _networkMonitor;
     SerialManager _serialManager;
-    Console _console;
+    NetworkManager _networkManager;
     SessionLog _sessionLog;
 public:
     Globals(){
@@ -56,10 +60,6 @@ public:
         return _serialManager.serial_ptr();
     };
 
-    void setLocalEcho(bool v)
-    {
-        _console.setLocalEcho(v);
-    };
 
 };
 
