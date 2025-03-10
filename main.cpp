@@ -39,9 +39,9 @@ int main(int argc, char *argv[])
     qDebug()<<"started: " << sysInfo;
 
     // ha nincs meg a terminal mappa, akkor letrehozzuk
-    if(!FileNameHelper::IsDirExists(FileNameHelper::terminalDirPath()))
+    if(!FileNameHelper::IsTerminalDirExists())
     {
-        QDir().mkdir(FileNameHelper::terminalDirPath());
+        FileNameHelper::MakeTerminalDir();
     }
 
     // 1 ping
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     MainWindow w;
     bool localEcho;
 
-    QString fn = FileNameHelper::settingsPath();
+    QString fn = FileNameHelper::serialSettingsFilePath();
     _globals._serialManager.loadSettings(fn,&localEcho);
     w.setLocalEcho(localEcho);
     //w.setStatusBarText(sysInfo);

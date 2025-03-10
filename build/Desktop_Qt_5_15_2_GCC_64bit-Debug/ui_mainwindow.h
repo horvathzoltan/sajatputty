@@ -35,6 +35,8 @@ public:
     QAction *actionLoadSettings;
     QAction *actionSaveSettings;
     QAction *actionConfigure_Network;
+    QAction *actionLoadSettings_Network;
+    QAction *actionSaveSettings_Network;
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
     QToolBar *mainToolBar;
@@ -97,6 +99,14 @@ public:
         actionConfigure_Network = new QAction(MainWindow);
         actionConfigure_Network->setObjectName(QString::fromUtf8("actionConfigure_Network"));
         actionConfigure_Network->setIcon(icon2);
+        actionLoadSettings_Network = new QAction(MainWindow);
+        actionLoadSettings_Network->setObjectName(QString::fromUtf8("actionLoadSettings_Network"));
+        actionLoadSettings_Network->setIcon(icon5);
+        actionLoadSettings_Network->setMenuRole(QAction::TextHeuristicRole);
+        actionSaveSettings_Network = new QAction(MainWindow);
+        actionSaveSettings_Network->setObjectName(QString::fromUtf8("actionSaveSettings_Network"));
+        actionSaveSettings_Network->setIcon(icon6);
+        actionSaveSettings_Network->setMenuRole(QAction::TextHeuristicRole);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         verticalLayout = new QVBoxLayout(centralWidget);
@@ -119,10 +129,12 @@ public:
         mainToolBar->addAction(actionSaveSettings);
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionConfigure_Network);
-        mainToolBar->addAction(actionLoadSession);
-        mainToolBar->addAction(actionSaveSession);
+        mainToolBar->addAction(actionLoadSettings_Network);
+        mainToolBar->addAction(actionSaveSettings_Network);
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionClear);
+        mainToolBar->addAction(actionLoadSession);
+        mainToolBar->addAction(actionSaveSession);
 
         retranslateUi(MainWindow);
 
@@ -195,6 +207,14 @@ public:
 #if QT_CONFIG(shortcut)
         actionConfigure_Network->setShortcut(QCoreApplication::translate("MainWindow", "Shift+N", nullptr));
 #endif // QT_CONFIG(shortcut)
+        actionLoadSettings_Network->setText(QCoreApplication::translate("MainWindow", "LoadNetworkSettings", nullptr));
+#if QT_CONFIG(tooltip)
+        actionLoadSettings_Network->setToolTip(QCoreApplication::translate("MainWindow", "Load network settings", nullptr));
+#endif // QT_CONFIG(tooltip)
+        actionSaveSettings_Network->setText(QCoreApplication::translate("MainWindow", "SaveSettings_Network", nullptr));
+#if QT_CONFIG(tooltip)
+        actionSaveSettings_Network->setToolTip(QCoreApplication::translate("MainWindow", "Save network settings", nullptr));
+#endif // QT_CONFIG(tooltip)
     } // retranslateUi
 
 };

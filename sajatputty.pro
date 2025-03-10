@@ -23,6 +23,8 @@ SOURCES += \
     helpers/textfilehelper.cpp \
     infrastructure/buildnumber.cpp \
     infrastructure/globals.cpp \
+    infrastructure/networkmanager.cpp \
+    infrastructure/serialmanager.cpp \
     main.cpp \
     mainwindow.cpp \
     session.cpp \
@@ -46,11 +48,14 @@ HEADERS += \
     helpers/textfilehelper.h \
     infrastructure/buildnumber.h \
     infrastructure/globals.h \
+    infrastructure/networkmanager.h \
+    infrastructure/serialmanager.h \
     mainwindow.h \
     session.h \
     settingsdialog.h \
     console.h \
     settingsnetworkdialog.h \
+    viewmodels/networksettingsvm.h \
     viewmodels/serialsettingsvm.h
      #ssd1306.h
 

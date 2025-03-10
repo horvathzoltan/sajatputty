@@ -12,18 +12,33 @@ public:
 
 private:
     static const QString _terminalDirName;// = "terminal";
+//    static const QString _customSettingsDirName;
     static const QString _logDirName;// = "terminal_logs";
     static const QString _logFileName;// = "terminal_log.txt";
-    static const QString _settingsFileName;// = "terminal_settings.txt";
+    static const QString _serialSettingsFileName;// = "terminal_settings.txt";
+    static const QString _networkSettingsFileName;// = "terminal_settings.txt";
     static const QString _homePath;// = QDir::homePath();
 
+    //static QString terminalDirPath();
+    //static QString customSettingsDirPath();
+    static QString generateUniqueFileName(const QDir& dir, const QString& fn);
 public:
+
     static QString terminalDirPath();
-    static QString terminalLogPath();
-    static QString settingsPath();
+
+    static QString serialSettingsFilePath();
+    static QString networkSettingsFilePath();
+    static QString logDirPath();
+
+    static QString custom_serialSettingsFilePath();
+    static QString custom_networkSettingsFilePath();
+    static QString custom_logFilePath();
 
     static bool IsFileExists(const QString& fn);
     static bool IsDirExists(const QString& fn);
+
+    static bool IsTerminalDirExists();
+    static void MakeTerminalDir();
 };
 
 #endif // FILENAMEHELPER_H

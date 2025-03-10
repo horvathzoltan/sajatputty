@@ -101,9 +101,11 @@ private slots:
     void about();
     void writeData_console(const QByteArray &data);
     void readData_serial();
-    void saveSettings();
-    void loadSettings();
-    void saveSession();
+    void saveSettings_serial();
+    void loadSettings_serial();
+    void saveSettings_network();
+    void loadSettings_network();
+    void saveSession();    
     void loadSession();
     void clear();
 
@@ -119,7 +121,7 @@ private slots:
     void process_AboutQt();
 
     void on_SettingsDialogApply();
-    void process_NetworkApply();
+    void on_NetworkSettingsDialogApply();
 
 public slots:
     void onNetworkConnected();
@@ -137,7 +139,7 @@ private:
     SettingsDialog* _settingsDialog = nullptr;
     SettingsNetworkDialog* _networkSettingsDialog = nullptr;
 
-    void SetSettingsDialog();
+    void SetSettingsDialog_Serial();
     void SetSettingsDialog_Network();
 
 public:    

@@ -67,8 +67,16 @@ Console::Console(QWidget *parent) :
     setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
+void Console::setText(const QString &txt)
+{
+    insertPlainText(txt);
 
-void Console::putData(const QByteArray &data)
+    QScrollBar *bar = verticalScrollBar();
+    bar->setValue(bar->maximum());
+}
+
+
+void Console::putData(const QByteArray &data, DataType dataType)
 {
     QString txt = QString::fromLocal8Bit(data);
     insertPlainText(txt);

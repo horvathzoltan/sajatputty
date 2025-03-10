@@ -1,7 +1,10 @@
 #ifndef SERIALSETTINGSVM_H
 #define SERIALSETTINGSVM_H
 
+#include "networksettingsvm.h"
+
 #include <QSerialPort>
+
 
 
 struct SerialSettingsVM {

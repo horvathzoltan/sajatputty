@@ -31,10 +31,12 @@
    <addaction name="actionSaveSettings"/>
    <addaction name="separator"/>
    <addaction name="actionConfigure_Network"/>
-   <addaction name="actionLoadSession"/>
-   <addaction name="actionSaveSession"/>
+   <addaction name="actionLoadSettings_Network"/>
+   <addaction name="actionSaveSettings_Network"/>
    <addaction name="separator"/>
    <addaction name="actionClear"/>
+   <addaction name="actionLoadSession"/>
+   <addaction name="actionSaveSession"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAbout">
@@ -198,6 +200,36 @@
    </property>
    <property name="shortcut">
     <string>Shift+N</string>
+   </property>
+  </action>
+  <action name="actionLoadSettings_Network">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/load.png</normaloff>:/images/load.png</iconset>
+   </property>
+   <property name="text">
+    <string>LoadNetworkSettings</string>
+   </property>
+   <property name="toolTip">
+    <string>Load network settings</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionSaveSettings_Network">
+   <property name="icon">
+    <iconset resource="terminal.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
+   </property>
+   <property name="text">
+    <string>SaveSettings_Network</string>
+   </property>
+   <property name="toolTip">
+    <string>Save network settings</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
  </widget>

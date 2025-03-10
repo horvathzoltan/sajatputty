@@ -30,7 +30,7 @@ void SettingsNetworkDialog::on_pushButton_apply_clicked()
     hide();
 }
 
-void SettingsNetworkDialog::WriteSettings(const SettingsNetworkVM& p)
+void SettingsNetworkDialog::WriteSettings(const NetworkSettingsVM& p)
 {
     _currentSettings = p;
 
@@ -42,9 +42,9 @@ void SettingsNetworkDialog::WriteSettings(const SettingsNetworkVM& p)
     ui->label_findIp->setText(p.deviceIp);
 }
 
-SettingsNetworkDialog::SettingsNetworkVM SettingsNetworkDialog::GetSettings()
+NetworkSettingsVM SettingsNetworkDialog::GetSettings()
 {
-    SettingsNetworkVM m;
+    NetworkSettingsVM m;
 
     m.serverIp = ui->lineEdit_serverIp->text();
     bool ok;

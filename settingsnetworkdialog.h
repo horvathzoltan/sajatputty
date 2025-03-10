@@ -1,6 +1,7 @@
 #ifndef SETTINGSNETWORKDIALOG_H
 #define SETTINGSNETWORKDIALOG_H
 
+#include "viewmodels/networksettingsvm.h"
 #include <QDialog>
 
 namespace Ui {
@@ -12,19 +13,14 @@ class SettingsNetworkDialog : public QDialog
     Q_OBJECT
 
 public:
-    struct SettingsNetworkVM {
-        QString deviceIp;
-        QString serverIp;
-        int serverPort;
-        QString messageTemplate;
-    };
+
 
 
     explicit SettingsNetworkDialog(QWidget *parent = nullptr);
     ~SettingsNetworkDialog();
 
-    SettingsNetworkVM settings(){return _currentSettings;}
-    void WriteSettings(const SettingsNetworkVM &);
+    NetworkSettingsVM settings(){return _currentSettings;}
+    void WriteSettings(const NetworkSettingsVM &);
 
 
 private slots:
@@ -37,9 +33,9 @@ signals:
 
 private:
     Ui::SettingsNetworkDialog *ui;
-    SettingsNetworkVM _currentSettings;
+    NetworkSettingsVM _currentSettings;
 
-    SettingsNetworkVM GetSettings();
+    NetworkSettingsVM GetSettings();
 };
 
 #endif // SETTINGSNETWORKDIALOG_H

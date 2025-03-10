@@ -62,9 +62,11 @@ signals:
     void getData(const QByteArray &data);
 
 public:
+    enum DataType{ RX, TX };
     explicit Console(QWidget *parent = nullptr);
 
-    void putData(const QByteArray &data);
+    void setText(const QString &txt);
+    void putData(const QByteArray &data, DataType);
     void setLocalEchoEnabled(bool set);
 
 protected:

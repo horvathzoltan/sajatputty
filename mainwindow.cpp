@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 {
     m_ui->setupUi(this);
-    m_ui->mainToolBar->setIconSize(QSize(80, 80));
+    m_ui->mainToolBar->setIconSize(QSize(48, 48));
     _console->setEnabled(true);
     setCentralWidget(_console);
 
@@ -100,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // settings apply
     connect(_settingsDialog, &SettingsDialog::apply, this, &MainWindow::on_SettingsDialogApply);
     // networkSettings apply
-    connect(_networkSettingsDialog, &SettingsNetworkDialog::apply, this, &MainWindow::process_NetworkApply);
+    connect(_networkSettingsDialog, &SettingsNetworkDialog::apply, this, &MainWindow::on_NetworkSettingsDialogApply);
 }
 
 /*
@@ -114,8 +114,8 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionDisconnect, &QAction::triggered, this, &MainWindow::process_CloseSerialPort);
     /*settings*/
     connect(m_ui->actionConfigure, &QAction::triggered, this, &MainWindow::process_ActionConfigure);
-    connect(m_ui->actionLoadSettings, &QAction::triggered, this, &MainWindow::loadSettings);
-    connect(m_ui->actionSaveSettings, &QAction::triggered, this, &MainWindow::saveSettings);
+    connect(m_ui->actionLoadSettings, &QAction::triggered, this, &MainWindow::loadSettings_serial);
+    connect(m_ui->actionSaveSettings, &QAction::triggered, this, &MainWindow::saveSettings_serial);
     /*session*/
     connect(m_ui->actionClear, &QAction::triggered, this, &MainWindow::process_ActionClear);
     connect(m_ui->actionSaveSession, &QAction::triggered, this, &MainWindow::saveSession);
@@ -127,11 +127,14 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::process_Close);
     /*settings_network*/
     connect(m_ui->actionConfigure_Network, &QAction::triggered, this, &MainWindow::process_ActionConfigureNetwork);
+    connect(m_ui->actionSaveSettings_Network, &QAction::triggered, this, &MainWindow::saveSettings_network);
+    connect(m_ui->actionLoadSettings_Network, &QAction::triggered, this, &MainWindow::loadSettings_network);
+
 }
 
 void MainWindow::process_ActionConfigure()
 {
-    SetSettingsDialog();
+    SetSettingsDialog_Serial();
     _settingsDialog->show();
 }
 
@@ -180,16 +183,10 @@ void MainWindow::on_SettingsDialogApply()
 {
     SerialSettingsVM p = _settingsDialog->settings();
 
-    _globals._serialManager.setSerialSettings(p);
+    _globals._serialManager.setSettings(p);
     _console->setLocalEcho(p.localEchoEnabled);
-    _globals._serialManager.saveSettings(_console->localEcho());
-}
-
-void MainWindow::SetSettingsDialog()
-{
-
-    SerialSettingsVM p = _globals._serialManager.getSerialSettings();
-    _settingsDialog->WriteSettings(p);
+    QString fn = FileNameHelper::serialSettingsFilePath();
+    _globals._serialManager.saveSettings(fn, _console->localEcho());
 }
 
 
@@ -252,24 +249,47 @@ void MainWindow::showStatusMessage(const QString &message)
 
 /**/
 
-void MainWindow::saveSettings()
+void MainWindow::saveSettings_serial()
 {
-    QString fn = QFileDialog::getSaveFileName(this, "Save Setting", "/home/pi/terminal_settings", "");
+    QString fd = FileNameHelper::custom_serialSettingsFilePath();
+    QString fn = QFileDialog::getSaveFileName(this, "Save Setting", fd, "Ini file (*.ini)");
     _globals._serialManager.saveSettings(fn, _console->localEcho());
 }
 
-void MainWindow::loadSettings()
+void MainWindow::loadSettings_serial()
 {
-    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Setting"), "/home/pi/terminal_settings", tr(""));
+    QString fd = FileNameHelper::terminalDirPath();
+    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Setting"), fd, "Ini file (*.ini)");
+    if(fn.isEmpty()) return;
+
     bool localEcho;
-    //SerialSettingsHelper::loadSettings(fn, _serial, &localEcho);
     _globals._serialManager.loadSettings(fn, &localEcho);
     _console->setLocalEcho(localEcho);
 }
 
+/**/
+void MainWindow::saveSettings_network()
+{
+    QString fd = FileNameHelper::custom_networkSettingsFilePath();
+    QString fn = QFileDialog::getSaveFileName(this, "Save Network Setting", fd, "Ini file (*.ini)");
+    _globals._networkManager.saveSettings(fn);
+}
+
+void MainWindow::loadSettings_network()
+{
+    QString fd = FileNameHelper::terminalDirPath();
+    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Network Setting"), fd, "Ini file (*.ini)");
+    if(fn.isEmpty()) return;
+
+    _globals._networkManager.loadSettings(fn);
+}
+
+
 void MainWindow::saveSession()
 {
-    auto fn = QFileDialog::getSaveFileName(this, tr("Save Session"), "/home/pi/terminal_logs", tr(""));
+    QString fd = FileNameHelper::custom_logFilePath();
+    auto fn = QFileDialog::getSaveFileName(this, tr("Save Session"), fd, "Log file (*.txt)");
+
     QString stxt = _globals._serialManager.MSerial_ToString(_console->localEcho()); //SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
     QString ctxt = _console->toPlainText();
     _globals._sessionLog.saveSession(fn, stxt, ctxt);
@@ -277,10 +297,13 @@ void MainWindow::saveSession()
 
 void MainWindow::loadSession()
 {
-    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Session"), "/home/pi/terminal_logs", tr(""));
-    QString stxt = _globals._sessionLog.loadSession(fn);
+    QString fd = FileNameHelper::terminalDirPath();
+    auto fn  = QFileDialog::getOpenFileName(this, tr("Load Session"), fd, "Log file (*.txt)");
+    if(fn.isEmpty()) return;
 
-    _console->putData(stxt.toLocal8Bit());
+    QString stxt = _globals._sessionLog.loadSession(fn);
+    _console->clear();
+    _console->setText(stxt);
 }
 
 void MainWindow::setStatusBarText(const QString &v)
@@ -320,24 +343,26 @@ void MainWindow::onNoNetwork()
     setStatusBarText(sysInfo + " "+ msg);
 }
 
+void MainWindow::SetSettingsDialog_Serial()
+{
+    SerialSettingsVM p = _globals._serialManager.getSettings();
+    _settingsDialog->WriteSettings(p);
+}
+
 /*network_settings*/
 
 void MainWindow::SetSettingsDialog_Network()
 {
-    SettingsNetworkDialog::SettingsNetworkVM p;
-    p.deviceIp = _globals._helpers._sysinfoHelper.hostip();
-    p.serverIp = "172.16.1.5";
-    p.serverPort = 8081;
-    p.messageTemplate = "makk";
-
+    NetworkSettingsVM p = _globals._networkManager.getSettings();
     _networkSettingsDialog->WriteSettings(p);
 }
 
-void MainWindow::process_NetworkApply()
+void MainWindow::on_NetworkSettingsDialogApply()
 {
-    SettingsNetworkDialog::SettingsNetworkVM p = _networkSettingsDialog->settings();
-
-    _globals._networkManager.saveSettings();
+    NetworkSettingsVM p = _networkSettingsDialog->settings();
+    _globals._networkManager.setSettings(p);
+    QString fn = FileNameHelper::networkSettingsFilePath();
+    _globals._networkManager.saveSettings(fn);
 }
 
 /*SERIAL*/
@@ -348,13 +373,15 @@ void MainWindow::writeData_console(const QByteArray &data)
     // ha van echo, kirakjuk a konzolra
     if (_console->localEcho())
     {
-        _console->putData(data);
+        _console->putData(data, Console::DataType::TX);
     }
     // kirakjuk a logba is
-    _globals._sessionLog.append({SessionLog::Write, data});
+    SessionLog::Data d(SessionLog::Write, data);
+    _globals._sessionLog.append(d);
     // majd a portra is
-    //_serial->write(data);
     _globals._serialManager.writeData(data);
+
+    // amit beírtunk, és van network, kiküldjük
 }
 
 void MainWindow::readData_serial()
@@ -362,9 +389,12 @@ void MainWindow::readData_serial()
     const QByteArray data = _globals._serialManager.readAll();
     // ami jött data
     // kirakjuk a konzolra
-    _console->putData(data);
+    _console->putData(data, Console::DataType::RX);
     // kirakjuk a logba is
-    _globals._sessionLog.append({SessionLog::Read, data});
+    SessionLog::Data d(SessionLog::Read, data);
+    _globals._sessionLog.append(d);
+
+    // amit kiolvastunk, és van network, kiküldjük
 }
 
 /*CONSOLE*/
