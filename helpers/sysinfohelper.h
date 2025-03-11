@@ -25,6 +25,7 @@ public:
     QHostAddress hostAddress(){return _network.hostAddress();}
     QString hostip(){return _network.ip();}
     int networkInterfaceIx(){return _network.interfaceIx();}
+    QString user(){return _user;}
 private:
     QString GetLocalIp();
 };

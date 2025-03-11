@@ -48,7 +48,7 @@ void SerialManager::closeSerialPort()
 
 QString SerialManager::MSerial_ToString(bool localEcho)
 {
-    return SerialSettingsHelper::MSerial_ToString(&_serial, localEcho);
+    return SerialSettingsHelper::MSerial_ToString(&_serial);
 }
 
 void SerialManager::saveSettings(const QString& fn, bool localEcho)

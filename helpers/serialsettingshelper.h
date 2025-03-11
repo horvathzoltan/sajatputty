@@ -12,7 +12,7 @@ public:
     static void loadSettings(const QString& fn, QSerialPort *m_serial, bool* localEcho);
     static void saveSettings(const QString& fn, QSerialPort *m_serial, bool localEcho);
 
-    static QString MSerial_ToString(QSerialPort *m_serial, bool localEcho);
+    static QString MSerial_ToString(QSerialPort *m_serial);//, bool localEcho);
 
 
     static QString BaudToText(QSerialPort::BaudRate v);

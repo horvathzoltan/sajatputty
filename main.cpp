@@ -38,6 +38,9 @@ int main(int argc, char *argv[])
     QString sysInfo = _globals._helpers._sysinfoHelper.Get_SysInfo();
     qDebug()<<"started: " << sysInfo;
 
+
+    QString user = _globals._helpers._sysinfoHelper.user();
+    FileNameHelper::Init(user);
     // ha nincs meg a terminal mappa, akkor letrehozzuk
     if(!FileNameHelper::IsTerminalDirExists())
     {

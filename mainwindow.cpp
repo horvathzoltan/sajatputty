@@ -196,36 +196,7 @@ MainWindow::~MainWindow()
     delete m_ui;
 }
 
-void MainWindow::openSerialPort(){
-    bool ok = _globals._serialManager.openSerialPort();
-    if(ok)
-    {
-        m_ui->actionConnect->setEnabled(false);
-        m_ui->actionDisconnect->setEnabled(true);
-        m_ui->actionConfigure->setEnabled(false);
-        _console->setEnabled(true);
-        QString msg = _globals._serialManager.MSerial_ToString(_console->localEcho()); //SerialSettingsHelper::MSerial_ToString(_globals._serial, _console->localEcho());
-        showStatusMessage("Connected:"+msg);
-    }
-    else
-    {
-        QMessageBox::critical(this, tr("Error"), _globals._serialManager.errorString());
-        showStatusMessage(tr("Open error"));
-    }
-    _globals._sessionLog.clear();
-}
-// a serialsettingshelper beolvassa fájlból a m_serial-ba
 
-void MainWindow::closeSerialPort()
-{
-    _globals._serialManager.closeSerialPort();
-    _console->setEnabled(false);
-
-    m_ui->actionConnect->setEnabled(true);
-    m_ui->actionDisconnect->setEnabled(false);
-    m_ui->actionConfigure->setEnabled(true);
-    showStatusMessage(tr("Disconnected"));
-}
 
 void MainWindow::about()
 {
@@ -241,10 +212,10 @@ void MainWindow::clear()
     _console->clear();
 }
 
-void MainWindow::showStatusMessage(const QString &message)
-{
-    m_status->setText(message);
-}
+// void MainWindow::showStatusMessage(const QString &message)
+// {
+//     m_status->setText(message);
+// }
 
 
 /**/
@@ -291,8 +262,8 @@ void MainWindow::saveSession()
     auto fn = QFileDialog::getSaveFileName(this, tr("Save Session"), fd, "Log file (*.txt)");
 
     QString stxt = _globals._serialManager.MSerial_ToString(_console->localEcho()); //SerialSettingsHelper::MSerial_ToString(_serial, _console->localEcho());
-    QString ctxt = _console->toPlainText();
-    _globals._sessionLog.saveSession(fn, stxt, ctxt);
+    //QString ctxt = _console->toPlainText();
+    _globals._sessionLog.saveSession(fn, stxt);
 }
 
 void MainWindow::loadSession()
@@ -303,7 +274,7 @@ void MainWindow::loadSession()
 
     QString stxt = _globals._sessionLog.loadSession(fn);
     _console->clear();
-    _console->setText(stxt);
+    _console->appendText(stxt);
 }
 
 void MainWindow::setStatusBarText(const QString &v)
@@ -365,7 +336,53 @@ void MainWindow::on_NetworkSettingsDialogApply()
     _globals._networkManager.saveSettings(fn);
 }
 
-/*SERIAL*/
+
+/*CONSOLE*/
+
+void MainWindow::handleError_serial(QSerialPort::SerialPortError error)
+{
+    if (error == QSerialPort::ResourceError) {
+        QMessageBox::critical(this, tr("Critical Error"), _globals._serialManager.errorString());
+        closeSerialPort();
+    }
+}
+
+/*SERIALPORT*/
+
+void MainWindow::openSerialPort(){
+    bool ok = _globals._serialManager.openSerialPort();
+    if(ok)
+    {
+        m_ui->actionConnect->setEnabled(false);
+        m_ui->actionDisconnect->setEnabled(true);
+        m_ui->actionConfigure->setEnabled(false);
+        _console->setEnabled(true);
+        QString msg = _globals._serialManager.MSerial_ToString(_console->localEcho()); //SerialSettingsHelper::MSerial_ToString(_globals._serial, _console->localEcho());
+        //showStatusMessage("Connected:"+msg);
+        _console->appendText("connected:"+msg);
+    }
+    else
+    {
+        QMessageBox::critical(this, tr("Error"), _globals._serialManager.errorString());
+        //showStatusMessage(tr("Open error"));
+    }
+    _globals._sessionLog.clear();
+}
+// a serialsettingshelper beolvassa fájlból a m_serial-ba
+
+void MainWindow::closeSerialPort()
+{
+    _globals._serialManager.closeSerialPort();
+    _console->setEnabled(false);
+
+    m_ui->actionConnect->setEnabled(true);
+    m_ui->actionDisconnect->setEnabled(false);
+    m_ui->actionConfigure->setEnabled(true);
+    //showStatusMessage(tr("Disconnected"));
+
+    _console->appendText("disconnected");
+}
+
 
 void MainWindow::writeData_console(const QByteArray &data)
 {
@@ -373,7 +390,7 @@ void MainWindow::writeData_console(const QByteArray &data)
     // ha van echo, kirakjuk a konzolra
     if (_console->localEcho())
     {
-        _console->putData(data, Console::DataType::TX);
+        _console->appendData(data, Console::DataType::TX);
     }
     // kirakjuk a logba is
     SessionLog::Data d(SessionLog::Write, data);
@@ -389,20 +406,10 @@ void MainWindow::readData_serial()
     const QByteArray data = _globals._serialManager.readAll();
     // ami jött data
     // kirakjuk a konzolra
-    _console->putData(data, Console::DataType::RX);
+    _console->appendData(data, Console::DataType::RX);
     // kirakjuk a logba is
     SessionLog::Data d(SessionLog::Read, data);
     _globals._sessionLog.append(d);
 
     // amit kiolvastunk, és van network, kiküldjük
-}
-
-/*CONSOLE*/
-
-void MainWindow::handleError_serial(QSerialPort::SerialPortError error)
-{
-    if (error == QSerialPort::ResourceError) {
-        QMessageBox::critical(this, tr("Critical Error"), _globals._serialManager.errorString());
-        closeSerialPort();
-    }
 }

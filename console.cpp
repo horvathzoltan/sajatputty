@@ -67,23 +67,56 @@ Console::Console(QWidget *parent) :
     setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
-void Console::setText(const QString &txt)
-{
-    insertPlainText(txt);
+QBrush Console::GetBrush(DataType t){
+    static QBrush yellow = QBrush((Qt::GlobalColor)Qt::yellow);
+    static QBrush green = QBrush((Qt::GlobalColor)Qt::green);
+    static QBrush cyan = QBrush((Qt::GlobalColor)Qt::cyan);
+    static QBrush gray = QBrush((Qt::GlobalColor)Qt::gray);
 
-    QScrollBar *bar = verticalScrollBar();
-    bar->setValue(bar->maximum());
+    if(t == TX) return yellow;
+    if(t == RX) return green;
+    if(t == Comment) return cyan;
+    return gray;
+}
+
+void Console::SetColor(const QBrush& b)
+{
+    QTextCharFormat tf;
+    tf = currentCharFormat();
+    tf.setForeground(b);
+    setCurrentCharFormat(tf);
+}
+
+void Console::appendText(const QString &txt)
+{
+
+    QTextCursor cur = textCursor();
+    cur.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor,2);
+    QString a= cur.selectedText();
+    if(!a.isEmpty() && !a.endsWith('\n')) insertPlainText("\n");
+    //QString txt2 = ColorizeLog(txt, Comment);
+    QBrush b = GetBrush(Comment);
+    SetColor(b);
+    appendText_private(txt);
 }
 
 
-void Console::putData(const QByteArray &data, DataType dataType)
+void Console::appendData(const QByteArray &data, DataType t)
 {
     QString txt = QString::fromLocal8Bit(data);
-    insertPlainText(txt);
+    //QString txt2 = ColorizeLog(txt, t);
+    QBrush b = GetBrush(t);
+    SetColor(b);
+    appendText_private(txt);
+}
 
+void Console::appendText_private(const QString &txt)
+{
+    insertPlainText(txt);
     QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());
 }
+
 
 void Console::setLocalEchoEnabled(bool set)
 {
@@ -124,3 +157,18 @@ void Console::contextMenuEvent(QContextMenuEvent *e)
 {
     Q_UNUSED(e)
 }
+
+
+
+// QString Console::GetLogColor(DataType t){
+//     if(t == TX) return "yellow";
+//     if(t == RX) return "green";
+//     if(t == Comment) return "cyan";
+//     return "gray";
+// }
+
+// QString Console::ColorizeLog(const QString& str, DataType t){
+//     if(str.isEmpty()) return str;
+//     QString c = GetLogColor(t);
+//     return QStringLiteral("<p style='color: ")+c+"'>"+str+"</p>";
+// }

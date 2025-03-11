@@ -43,15 +43,15 @@ void SerialSettingsHelper::saveSettings(const QString& _settingsFn, QSerialPort 
     settings.setValue("localEcho", localEcho);
 }
 
-QString SerialSettingsHelper::MSerial_ToString(QSerialPort *m_serial, bool localEcho)
+QString SerialSettingsHelper::MSerial_ToString(QSerialPort *m_serial)
 {
     auto e = m_serial->portName()+";"
            + QString::number(m_serial->baudRate())+";"
            + SerialSettingsHelper::DataBitsToText(m_serial->dataBits())+";"
            + SerialSettingsHelper::StopBitsToText(m_serial->stopBits())+";"
            + SerialSettingsHelper::ParityToText(m_serial->parity())+";"
-           + SerialSettingsHelper::FlowControlToText(m_serial->flowControl())+";"
-           + (localEcho?"enabled":"disabled")+"\n";
+             + SerialSettingsHelper::FlowControlToText(m_serial->flowControl())+"\n";
+           //+ (localEcho?"enabled":"disabled")+"\n";
 
     return e;
 }

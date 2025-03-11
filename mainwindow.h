@@ -130,7 +130,7 @@ public slots:
 
 private:
     void initActionsConnections();
-    void showStatusMessage(const QString &message);
+    //void showStatusMessage(const QString &message);
 
 private:
     Ui::MainWindow *m_ui = nullptr;

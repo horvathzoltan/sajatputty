@@ -8,7 +8,7 @@
 //#include <QFileDialog>
 
 
-void SessionLog::saveSession(const QString& logfn, const QString& settingTxt, const QString& consoleTxt)
+void SessionLog::saveSession(const QString& logfn, const QString& settingTxt)
 {
     //QString logfn = QFileDialog::getSaveFileName(this, tr("Save File"), "/home/pi/terminal_logs", tr(""));
     if(logfn.isNull() || logfn.isEmpty()) return;
@@ -23,16 +23,16 @@ void SessionLog::saveSession(const QString& logfn, const QString& settingTxt, co
         auto logd = _logd.at(i);
 
         auto s = logd.wr()==SessionLog::Write?"TX":"RX";
-        stream<<logd.timestamp().toString("yyyy.mm.dd@HH.mm.ss")<<" "
+        stream<<logd.timestamp().toString("yyyy.MM.ddTHH:mm:ss.zzz")<<" "
               <<s<<" "
               <<logd.data()<<"\n";
     }
-    QFile logf2(logfn+".txt");
-    logf2.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    stream.setDevice(&logf2);
-    stream<<consoleTxt;
+    //QFile logf2(logfn+".txt");
+    //logf2.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+    //stream.setDevice(&logf2);
+    //stream<<consoleTxt;
     logf.close();
-    logf2.close();
+    //logf2.close();
 }
 
 QString SessionLog::loadSession(const QString &logfn)

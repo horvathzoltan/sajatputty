@@ -31,7 +31,7 @@ public:
 private:
     QList<struct Data> _logd;// = nullptr;
 public:
-    void saveSession(const QString& logfn, const QString& settingTxt, const QString& consoleTxt);
+    void saveSession(const QString& logfn, const QString& settingTxt);
     QString loadSession(const QString& logfn);
     void clear(){_logd.clear();}
     void append(Data a){_logd.append(a);}

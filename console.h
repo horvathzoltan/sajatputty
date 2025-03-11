@@ -62,11 +62,11 @@ signals:
     void getData(const QByteArray &data);
 
 public:
-    enum DataType{ RX, TX };
+    enum DataType{ RX, TX, Comment };
     explicit Console(QWidget *parent = nullptr);
 
-    void setText(const QString &txt);
-    void putData(const QByteArray &data, DataType);
+    void appendText(const QString &txt);
+    void appendData(const QByteArray &data, DataType);
     void setLocalEchoEnabled(bool set);
 
 protected:
@@ -76,8 +76,13 @@ protected:
     void contextMenuEvent(QContextMenuEvent *e) override;
 
 private:
+    void appendText_private(const QString &txt);
     bool m_localEchoEnabled = false;
 
+    // QString ColorizeLog(const QString &str, DataType t);
+    // QString GetLogColor(DataType t);
+    QBrush GetBrush(DataType t);
+    void SetColor(const QBrush &b);
 public:
     //bool* localEcho_ptr(){return &m_localEchoEnabled;}
     void setLocalEcho(bool v){m_localEchoEnabled = v;}

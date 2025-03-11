@@ -10,11 +10,13 @@ const QString FileNameHelper::_logFileName = "log.txt";
 const QString FileNameHelper::_serialSettingsFileName = "serial_settings.ini";
 const QString FileNameHelper::_networkSettingsFileName = "network_settings.ini";
 
-const QString FileNameHelper::_homePath = QDir::homePath();
+QString FileNameHelper::_homePath;
 
 QString FileNameHelper::terminalDirPath()
 {
-    return QDir(_homePath).filePath(_terminalDirName);
+    QDir d = QDir(_homePath);
+    QString a =  d.filePath(_terminalDirName);
+    return a;
 }
 
 QString FileNameHelper::logDirPath()
@@ -60,6 +62,15 @@ bool FileNameHelper::IsTerminalDirExists()
 void FileNameHelper::MakeTerminalDir()
 {
     QDir().mkdir(FileNameHelper::terminalDirPath());
+}
+
+void FileNameHelper::Init(const QString &userName)
+{
+    _homePath = QDir::homePath();
+    if(_homePath.isEmpty() || _homePath == "\\" || _homePath == "/")
+    {
+        _homePath = "/home/"+userName;
+    }
 }
 
 /*custom*/

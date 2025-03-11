@@ -1,6 +1,8 @@
 #include "sysinfohelper.h"
 
 #include "networkhelper.h"
+#include <unistd.h>
+#include <pwd.h>
 
 //started biovitality as zoli@hercules
 //started biovitality as zoli@pif
@@ -11,6 +13,14 @@ void SysInfoHelper::Init(const QString &t, const QString &b)
     _target = t;
     _buildNumber = b;
     _user = qgetenv("USER");
+    if(_user.isEmpty()){
+        _user = qgetenv("USERNAME");
+    } if(_user.isEmpty()){
+        struct passwd *pw = getpwuid(getuid());
+        if(pw){
+            _user = pw->pw_name;
+        }
+    }
     _hostName = QSysInfo::machineHostName();
     isInited = true;
     _network = NetworkHelper::GetLocalIp_Wired();
