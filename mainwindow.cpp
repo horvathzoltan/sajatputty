@@ -359,6 +359,9 @@ void MainWindow::openSerialPort(){
         QString msg = _globals._serialManager.MSerial_ToString(_console->localEcho()); //SerialSettingsHelper::MSerial_ToString(_globals._serial, _console->localEcho());
         //showStatusMessage("Connected:"+msg);
         _console->appendText("connected:"+msg);
+
+        NetworkSettingsVM s = _globals._networkManager.getSettings();
+        _globals._tcpSender.Init(s.serverIp, s.serverPort);
     }
     else
     {
@@ -378,6 +381,8 @@ void MainWindow::closeSerialPort()
     m_ui->actionDisconnect->setEnabled(false);
     m_ui->actionConfigure->setEnabled(true);
     //showStatusMessage(tr("Disconnected"));
+
+    _globals._tcpSender.Disconnect(),
 
     _console->appendText("disconnected");
 }
@@ -399,7 +404,7 @@ void MainWindow::writeData_console(const QByteArray &data)
 
     NetworkSettingsVM s = _globals._networkManager.getSettings();
 
-    _globals._tcpSender.send(data, s.serverIp, s.serverPort);
+    _globals._tcpSender.send(data);
     // amit beírtunk, és van network, kiküldjük
 }
 
@@ -414,4 +419,5 @@ void MainWindow::readData_serial()
     _globals._sessionLog.append(d);
 
     // amit kiolvastunk, és van network, kiküldjük
+     _globals._tcpSender.send(data);
 }
