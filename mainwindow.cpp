@@ -129,7 +129,6 @@ void MainWindow::initActionsConnections()
     connect(m_ui->actionConfigure_Network, &QAction::triggered, this, &MainWindow::process_ActionConfigureNetwork);
     connect(m_ui->actionSaveSettings_Network, &QAction::triggered, this, &MainWindow::saveSettings_network);
     connect(m_ui->actionLoadSettings_Network, &QAction::triggered, this, &MainWindow::loadSettings_network);
-
 }
 
 void MainWindow::process_ActionConfigure()
@@ -398,6 +397,9 @@ void MainWindow::writeData_console(const QByteArray &data)
     // majd a portra is
     _globals._serialManager.writeData(data);
 
+    NetworkSettingsVM s = _globals._networkManager.getSettings();
+
+    _globals._tcpSender.send(data, s.serverIp, s.serverPort);
     // amit beírtunk, és van network, kiküldjük
 }
 

@@ -6,6 +6,7 @@
 #include "networkmanager.h"
 #include "serialmanager.h"
 #include "session.h"
+#include "tcpsender.h"
 //#include "viewmodels/serialsettingsvm.h"
 
 #include <helpers/networkmonitor.h>
@@ -27,6 +28,8 @@ public:
     SerialManager _serialManager;
     NetworkManager _networkManager;
     SessionLog _sessionLog;
+    TcpSender _tcpSender;
+
 public:
     Globals(){};
 

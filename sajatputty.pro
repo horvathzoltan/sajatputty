@@ -25,6 +25,7 @@ SOURCES += \
     infrastructure/globals.cpp \
     infrastructure/networkmanager.cpp \
     infrastructure/serialmanager.cpp \
+    infrastructure/tcpsender.cpp \
     main.cpp \
     mainwindow.cpp \
     session.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     infrastructure/globals.h \
     infrastructure/networkmanager.h \
     infrastructure/serialmanager.h \
+    infrastructure/tcpsender.h \
     mainwindow.h \
     session.h \
     settingsdialog.h \
