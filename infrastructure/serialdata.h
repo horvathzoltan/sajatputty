@@ -1,9 +1,12 @@
+#ifndef SERIALDATATYPE_H
+#define SERIALDATATYPE_H
+
 #include <QBrush>
 #include <QDateTime>
 #include <QString>
 
-#ifndef SERIALDATATYPE_H
-#define SERIALDATATYPE_H
+#include "infrastructure/logmode.h"
+
 
 struct SerialData{
 public:
@@ -28,7 +31,7 @@ public:
 
     QBrush brush() const;
 
-    static QString ToString(const QList<SerialData>& data);
+    static QString ToString(const QList<SerialData>& data, LogMode logMode);
 };
 
 #endif // SERIALDATATYPE_H

@@ -2,8 +2,9 @@
 
 #include <QFile>
 #include <QTextStream>
-
 #include <helpers/textfilehelper.h>
+#include "infrastructure/logmode.h"
+
 
 void SessionLog::saveSession(const QString& logfn, const QString& settingTxt)
 {
@@ -15,7 +16,7 @@ void SessionLog::saveSession(const QString& logfn, const QString& settingTxt)
     QTextStream stream(&logf);
     stream<<"portName;baudRate;dataBits;parityBits;stopBits;flowControl\n";
     stream<<settingTxt;    
-    stream<<SerialData::ToString(_data);
+    stream<<SerialData::ToString(_data, LogMode::Log);
     logf.flush();
     logf.close();
 }

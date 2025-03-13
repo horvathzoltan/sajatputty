@@ -52,7 +52,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "session.h"
+//#include "session.h"
 //#include "helpers/serialsettingshelper.h"
 
 #include <QFile>
@@ -61,6 +61,8 @@
 #include <QTextStream>
 #include <QDateTime>
 #include "console.h"
+
+#include "infrastructure/logmode.h"
 
 //#define PRG_NAME        "oled_demo"
 //#define PRG_VERSION     "1.1"

@@ -28,18 +28,23 @@ QBrush SerialData::brush() const
     return gray;
 }
 
-QString SerialData::ToString(const QList<SerialData> &data)
+QString SerialData::ToString(const QList<SerialData> &data, LogMode logMode)
 {
     auto prevType = SerialData::Type::Unknown;
     QString row;
 
     for(auto&d:data)
     {
-        if(d.type() != prevType)
+        if(logMode == LogMode::Log)
         {
-            if(!row.isEmpty()) row+='\n';
-            row+=d.timestampStr()+','+d.typeStr()+','+d.data();
-            prevType = d.type();
+            if(d.type() != prevType)
+            {
+                if(!row.isEmpty()) row+='\n';
+                row+=d.timestampStr()+','+d.typeStr()+','+d.data();
+                prevType = d.type();
+            } else{
+                row+=d.data();
+            }
         } else{
             row+=d.data();
         }

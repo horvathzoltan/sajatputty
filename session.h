@@ -6,7 +6,6 @@
 #include <QList>
 #include <QString>
 
-
 class SessionLog
 {
 public:    

@@ -15,6 +15,7 @@ SOURCES += \
     helpers/filenamehelper.cpp \
     helpers/networkhelper.cpp \
     helpers/networkmonitor.cpp \
+    helpers/networksettingshelper.cpp \
     helpers/pinghelper.cpp \
     helpers/processhelper.cpp \
     helpers/serialsettingshelper.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     helpers/filenamehelper.h \
     helpers/networkhelper.h \
     helpers/networkmonitor.h \
+    helpers/networksettingshelper.h \
     helpers/pinghelper.h \
     helpers/processhelper.h \
     helpers/serialsettingshelper.h \
@@ -49,7 +51,9 @@ HEADERS += \
     helpers/sysinfohelper.h \
     helpers/textfilehelper.h \
     infrastructure/buildnumber.h \
+    infrastructure/chanelmode.h \
     infrastructure/globals.h \
+    infrastructure/logmode.h \
     infrastructure/networkmanager.h \
     infrastructure/serialdata.h \
     infrastructure/serialmanager.h \

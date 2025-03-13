@@ -43,20 +43,19 @@ private:
 class TcpSender : public QObject {
     Q_OBJECT
 
-
-
-public:
-
+public:        
     TcpSender(QObject *parent = nullptr);
-    bool Init(const QString &host, int port);
-    void send(const SerialData &);
+    bool Init(const QString &host, int port, LogMode m);
     void Disconnect();
+    void send(const SerialData &);
 
 private:
     QTcpSocket _socket;
     QString _host;
     int _port;
     ThreadSafeArray<SerialData> _buffer;
+
+    LogMode _mode;
 
     void send_buffer();
 

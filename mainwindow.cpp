@@ -361,7 +361,8 @@ void MainWindow::openSerialPort(){
         _console->appendText("connected:"+msg);
 
         NetworkSettingsVM s = _globals._networkManager.getSettings();
-        _globals._tcpSender.Init(s.serverIp, s.serverPort);
+        LogMode logMode = _globals._networkManager.logMode();
+        _globals._tcpSender.Init(s.serverIp, s.serverPort, logMode);
     }
     else
     {
@@ -403,9 +404,12 @@ void MainWindow::writeData_console(const QByteArray &data)
     // majd a portra is
     _globals._serialManager.writeData(d);
     // amit beírtunk, és van network, kiküldjük
-    _globals._networkManager.mode();
 
-    _globals._tcpSender.send(d);
+    ChanelMode chanelMode = _globals._networkManager.chanelMode();
+    if(chanelMode == ChanelMode::TX || chanelMode == ChanelMode::RXTX)
+    {
+        _globals._tcpSender.send(d);
+    }
 }
 
 void MainWindow::readData_serial()
@@ -420,5 +424,10 @@ void MainWindow::readData_serial()
 
     _globals._sessionLog.append(d);
     // amit kiolvastunk, és van network, kiküldjük
-     _globals._tcpSender.send(d);
+
+    ChanelMode chanelMode = _globals._networkManager.chanelMode();
+    if(chanelMode == ChanelMode::RX || chanelMode == ChanelMode::RXTX)
+    {
+        _globals._tcpSender.send(d);
+    }
 }

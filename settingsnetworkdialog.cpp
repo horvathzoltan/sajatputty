@@ -40,6 +40,34 @@ void SettingsNetworkDialog::WriteSettings(const NetworkSettingsVM& p)
 
     ui->lineEdit_findPort->setText(QString::number(p.serverPort));
     ui->label_findIp->setText(p.deviceIp);
+
+    if(p.logMode==LogMode::Log)
+    {
+        ui->radioButton_Log->setChecked(true);
+    } else if(p.logMode==LogMode::Echo) {
+        ui->radioButton_Echo->setChecked(true);
+    } else {
+        ui->radioButton_Echo->setChecked(false);
+        ui->radioButton_Log->setChecked(false);
+    }
+
+    if(p.chanelMode == ChanelMode::TX)
+    {
+        ui->radioButton_TX->setChecked(true);
+    } else if(p.chanelMode == ChanelMode::RX)
+    {
+        ui->radioButton_RX->setChecked(true);
+    } else if(p.chanelMode == ChanelMode::RXTX)
+    {
+        ui->radioButton_RXTX->setChecked(true);
+    } else {
+        ui->radioButton_TX->setChecked(false);
+        ui->radioButton_RX->setChecked(false);
+        ui->radioButton_RXTX->setChecked(false);
+    }
+
+    ui->lineEdit_deviceTag->setText(p.deviceTag);
+    //ui->set
 }
 
 NetworkSettingsVM SettingsNetworkDialog::GetSettings()
@@ -51,6 +79,31 @@ NetworkSettingsVM SettingsNetworkDialog::GetSettings()
     int port = ui->lineEdit_serverPort->text().toInt(&ok);
     m.serverPort = ok?port:-1;
     m.messageTemplate = ui->textEdit_messageTemplate->toPlainText();
+
+    if(ui->radioButton_Log->isChecked())
+    {
+        m.logMode = LogMode::Log;
+    } else if(ui->radioButton_Echo->isChecked())
+    {
+        m.logMode = LogMode::Echo;
+    } else {
+        m.logMode = LogMode::Echo;
+    }
+
+    if(ui->radioButton_TX->isChecked())
+    {
+        m.chanelMode = ChanelMode::TX;
+    } else if(ui->radioButton_RX->isChecked())
+    {
+        m.chanelMode = ChanelMode::RX;
+    } else if(ui->radioButton_RXTX->isChecked())
+    {
+        m.chanelMode = ChanelMode::RXTX;
+    } else {
+        m.chanelMode = ChanelMode::RX;
+    }
+
+    m.deviceTag = ui->lineEdit_deviceTag->text();
     return m;
 }
 

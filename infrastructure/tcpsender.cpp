@@ -11,10 +11,11 @@ TcpSender::TcpSender(QObject *parent) : QObject(parent)
     connect(&_socket, &QTcpSocket::errorOccurred, this, &TcpSender::onError);
 }
 
-bool TcpSender::Init(const QString &host, int port)
+bool TcpSender::Init(const QString &host, int port, LogMode m)
 {
     _host = host;
     _port = port;
+    _mode = m;
 
     return true;
 }
@@ -44,7 +45,7 @@ void TcpSender::bytesWritten(qint64 bytes)
 void TcpSender::send_buffer()
 {
     QList<SerialData> a = _buffer.get();
-    QByteArray msg = SerialData::ToString(a).toLocal8Bit();
+    QByteArray msg = SerialData::ToString(a, _mode).toLocal8Bit();
 
     if (!a.isEmpty())
     {
