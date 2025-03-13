@@ -2,6 +2,7 @@
 #define SERIALMANAGER_H
 
 #include "viewmodels/serialsettingsvm.h"
+#include "serialdata.h"
 #include <QSerialPort>
 
 
@@ -18,7 +19,7 @@ public:
     QString MSerial_ToString(bool localEcho);
     void saveSettings(const QString& fn, bool localEcho);
     void loadSettings(const QString&fn, bool* localEcho);
-    void writeData(const QByteArray &data);
+    void writeData(const SerialData &data);
     QByteArray readAll();
     
     const QSerialPort* serial_ptr(){return &_serial;}

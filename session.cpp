@@ -5,34 +5,19 @@
 
 #include <helpers/textfilehelper.h>
 
-//#include <QFileDialog>
-
-
 void SessionLog::saveSession(const QString& logfn, const QString& settingTxt)
 {
-    //QString logfn = QFileDialog::getSaveFileName(this, tr("Save File"), "/home/pi/terminal_logs", tr(""));
-    if(logfn.isNull() || logfn.isEmpty()) return;
+    if(logfn.isNull()) return;
+    if(logfn.isEmpty()) return;
+
     QFile logf(logfn);
     logf.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    //stream = new QTextStream(logf);
-
     QTextStream stream(&logf);
-    stream<<"Port name; Baud rate; Data bits; Parity bits; Stop bits; Flow control\n";
-    stream<<settingTxt;
-    for(int i = 0; i < _logd.length(); i++){
-        auto logd = _logd.at(i);
-
-        auto s = logd.wr()==SessionLog::Write?"TX":"RX";
-        stream<<logd.timestamp().toString("yyyy.MM.ddTHH:mm:ss.zzz")<<" "
-              <<s<<" "
-              <<logd.data()<<"\n";
-    }
-    //QFile logf2(logfn+".txt");
-    //logf2.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
-    //stream.setDevice(&logf2);
-    //stream<<consoleTxt;
+    stream<<"portName;baudRate;dataBits;parityBits;stopBits;flowControl\n";
+    stream<<settingTxt;    
+    stream<<SerialData::ToString(_data);
+    logf.flush();
     logf.close();
-    //logf2.close();
 }
 
 QString SessionLog::loadSession(const QString &logfn)
@@ -40,3 +25,4 @@ QString SessionLog::loadSession(const QString &logfn)
     QString txt =  TextFileHelper::Load(logfn, nullptr);
     return txt;
 }
+

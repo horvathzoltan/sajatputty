@@ -1,6 +1,8 @@
 
 #include "serialmanager.h"
 
+#include "serialdata.h"
+
 #include <helpers/serialsettingshelper.h>
 
 void SerialManager::setSettings(const SerialSettingsVM &p){
@@ -61,9 +63,9 @@ void SerialManager::loadSettings(const QString&fn, bool* localEcho )
     SerialSettingsHelper::loadSettings(fn, &_serial, localEcho);
 }
 
-void SerialManager::writeData(const QByteArray &data)
+void SerialManager::writeData(const SerialData &data)
 {
-    _serial.write(data);
+    _serial.write(data.data());
 }
 
 QByteArray SerialManager::readAll()

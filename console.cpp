@@ -67,17 +67,7 @@ Console::Console(QWidget *parent) :
     setTextInteractionFlags(Qt::TextBrowserInteraction);
 }
 
-QBrush Console::GetBrush(DataType t){
-    static QBrush yellow = QBrush((Qt::GlobalColor)Qt::yellow);
-    static QBrush green = QBrush((Qt::GlobalColor)Qt::green);
-    static QBrush cyan = QBrush((Qt::GlobalColor)Qt::cyan);
-    static QBrush gray = QBrush((Qt::GlobalColor)Qt::gray);
 
-    if(t == TX) return yellow;
-    if(t == RX) return green;
-    if(t == Comment) return cyan;
-    return gray;
-}
 
 void Console::SetColor(const QBrush& b)
 {
@@ -94,19 +84,16 @@ void Console::appendText(const QString &txt)
     cur.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor,2);
     QString a= cur.selectedText();
     if(!a.isEmpty() && !a.endsWith('\n')) insertPlainText("\n");
-    //QString txt2 = ColorizeLog(txt, Comment);
-    QBrush b = GetBrush(Comment);
-    SetColor(b);
+
+    SetColor(SerialData::commentBrush);
     appendText_private(txt);
 }
 
 
-void Console::appendData(const QByteArray &data, DataType t)
+void Console::appendData(const SerialData &data)
 {
-    QString txt = QString::fromLocal8Bit(data);
-    //QString txt2 = ColorizeLog(txt, t);
-    QBrush b = GetBrush(t);
-    SetColor(b);
+    QString txt = QString::fromLocal8Bit(data.data());
+    SetColor(data.brush());
     appendText_private(txt);
 }
 

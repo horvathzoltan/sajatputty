@@ -37,20 +37,27 @@ void TcpSender::onError(QTcpSocket::SocketError socketError)
 
 void TcpSender::bytesWritten(qint64 bytes)
 {
-    _buffer.removeFirst(bytes);
+    int rows = 0;
+    _buffer.removeFirst(rows);
 }
 
 void TcpSender::send_buffer()
 {
-    auto a = _buffer.get();
-    if(!a.isEmpty())
+    QList<SerialData> a = _buffer.get();
+    QByteArray msg = SerialData::ToString(a).toLocal8Bit();
+
+    if (!a.isEmpty())
     {
-        _socket.write(a);
+        qint64 sent = _socket.write(msg);
+        if(sent == msg.length())
+        {
+            _buffer.removeFirst(a.length());
+        }
     }
 }
 
-void TcpSender::send(const QByteArray &msg){
-    _buffer.append(msg);
+void TcpSender::send(const SerialData &d){
+    _buffer.append(d);
 
     if(_socket.state() == QAbstractSocket::ConnectedState){
         send_buffer();

@@ -390,34 +390,35 @@ void MainWindow::closeSerialPort()
 
 void MainWindow::writeData_console(const QByteArray &data)
 {
-    // amit küldünk data
-    // ha van echo, kirakjuk a konzolra
+    SerialData d(SerialData::Type::TX, data);
+
+    // amit beírunk a konzolba
+    // ha van echo, kirakjuk a konzolra is
     if (_console->localEcho())
     {
-        _console->appendData(data, Console::DataType::TX);
+        _console->appendData(d);
     }
     // kirakjuk a logba is
-    SessionLog::Data d(SessionLog::Write, data);
     _globals._sessionLog.append(d);
     // majd a portra is
-    _globals._serialManager.writeData(data);
-
-    NetworkSettingsVM s = _globals._networkManager.getSettings();
-
-    _globals._tcpSender.send(data);
+    _globals._serialManager.writeData(d);
     // amit beírtunk, és van network, kiküldjük
+    _globals._networkManager.mode();
+
+    _globals._tcpSender.send(d);
 }
 
 void MainWindow::readData_serial()
 {
     const QByteArray data = _globals._serialManager.readAll();
+    SerialData d(SerialData::Type::RX, data);
+
     // ami jött data
     // kirakjuk a konzolra
-    _console->appendData(data, Console::DataType::RX);
+    _console->appendData(d);
     // kirakjuk a logba is
-    SessionLog::Data d(SessionLog::Read, data);
-    _globals._sessionLog.append(d);
 
+    _globals._sessionLog.append(d);
     // amit kiolvastunk, és van network, kiküldjük
-     _globals._tcpSender.send(data);
+     _globals._tcpSender.send(d);
 }

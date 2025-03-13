@@ -24,6 +24,7 @@ SOURCES += \
     infrastructure/buildnumber.cpp \
     infrastructure/globals.cpp \
     infrastructure/networkmanager.cpp \
+    infrastructure/serialdata.cpp \
     infrastructure/serialmanager.cpp \
     infrastructure/tcpsender.cpp \
     main.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     infrastructure/buildnumber.h \
     infrastructure/globals.h \
     infrastructure/networkmanager.h \
+    infrastructure/serialdata.h \
     infrastructure/serialmanager.h \
     infrastructure/tcpsender.h \
     mainwindow.h \

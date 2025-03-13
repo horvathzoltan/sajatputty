@@ -52,6 +52,7 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include "infrastructure/serialdata.h"
 #include <QPlainTextEdit>
 
 class Console : public QPlainTextEdit
@@ -61,12 +62,11 @@ class Console : public QPlainTextEdit
 signals:
     void getData(const QByteArray &data);
 
-public:
-    enum DataType{ RX, TX, Comment };
+public:    
     explicit Console(QWidget *parent = nullptr);
 
     void appendText(const QString &txt);
-    void appendData(const QByteArray &data, DataType);
+    void appendData(const SerialData& d);
     void setLocalEchoEnabled(bool set);
 
 protected:
@@ -81,7 +81,7 @@ private:
 
     // QString ColorizeLog(const QString &str, DataType t);
     // QString GetLogColor(DataType t);
-    QBrush GetBrush(DataType t);
+    QBrush GetBrush(SerialData::Type t);
     void SetColor(const QBrush &b);
 public:
     //bool* localEcho_ptr(){return &m_localEchoEnabled;}
