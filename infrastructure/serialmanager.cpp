@@ -84,9 +84,13 @@ void SerialManager::loadSettings(const QString& _settingsFn, bool* localEcho)
     if(!localEcho) return;
 
     QSettings settings(_settingsFn, QSettings::NativeFormat);
-    _serial.setPortName(settings.value("name").toString());
-    _serial.setBaudRate(settings.value("baudRate").toInt());
-    _serial.setDataBits(SerialSettingsHelper::To_DataBits( settings.value("dataBits").toString()));
+    auto name0 = settings.value("name");
+    _serial.setPortName(name0.toString());
+    auto baudrate0 = settings.value("baudRate");
+    _serial.setBaudRate(baudrate0.toInt());
+    auto databits0 = settings.value("dataBits");
+    auto databits1 = SerialSettingsHelper::To_DataBits( databits0.toString());
+    _serial.setDataBits(databits1);
     _serial.setStopBits(SerialSettingsHelper::To_StopBits(settings.value("stopBits").toString()));
     _serial.setParity(SerialSettingsHelper::To_ParityBits(settings.value("parityBits").toString()));
     _serial.setFlowControl(SerialSettingsHelper::To_FlowControl(settings.value("flowcontrol").toString()));

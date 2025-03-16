@@ -16,6 +16,9 @@ NetworkSettingsVM NetworkManager::getSettings()
     p.serverIp = _ip;//"172.16.1.5";
     p.serverPort = _port;//8081;
     //p.messageTemplate = messageTemplate;//"makk";
+    p.logMode = _logMode;
+    p.deviceTag = _tag;
+    p.chanelMode = _chanelMode;
 
     return p;
 }
@@ -39,8 +42,12 @@ void NetworkManager::loadSettings(const QString& _settingsFn)
     _tag = settings.value("tag").toString();
     _ip = settings.value("ip").toString();
     _port = settings.value("port").toInt();
-    _logMode = NetworkSettingsHelper::To_LogMode(settings.value("logMode").toString());
-    _chanelMode = NetworkSettingsHelper::To_ChanelMode(settings.value("chanelMode").toString());
+    auto logmode0 = settings.value("logMode");
+    auto chanelmode0 = settings.value("chanelMode");
+    auto logmode =  NetworkSettingsHelper::To_LogMode(logmode0.toString());
+    auto chanelmode = NetworkSettingsHelper::To_ChanelMode(chanelmode0.toString());
+    _logMode = logmode;
+    _chanelMode = chanelmode;
     //messageTemplate = settings.value("template").toString();
 }
 

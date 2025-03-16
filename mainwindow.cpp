@@ -75,16 +75,26 @@ extern Globals _globals;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::MainWindow),
-    m_status(new QLabel),
-    _console(new Console(this)),
+    m_status(new QLabel),    
     _settingsDialog(new SettingsDialog),
     _networkSettingsDialog(new SettingsNetworkDialog)
 
 {
     m_ui->setupUi(this);
     m_ui->mainToolBar->setIconSize(QSize(48, 48));
+
+    _console = new Console(this);
     _console->setEnabled(true);
     setCentralWidget(_console);
+
+    //_console->setLayout(m_ui->tab_serial->layout());
+    //_console->show();
+
+    // QPlainTextEdit* _plt = new QPlainTextEdit(this);
+    // setCentralWidget(_plt);
+    // _plt->setReadOnly(true);
+    // _plt->show();
+
 
     m_ui->actionConnect->setEnabled(true);
     m_ui->actionDisconnect->setEnabled(false);
@@ -133,6 +143,8 @@ void MainWindow::initActionsConnections()
 
 void MainWindow::process_ActionConfigure()
 {
+    //_console->appendText("many many");
+
     SetSettingsDialog_Serial();
     _settingsDialog->show();
 }
@@ -153,8 +165,15 @@ void MainWindow::process_CloseSerialPort()
     closeSerialPort();
 }
 
-void MainWindow::process_Close()
+void MainWindow::closeEvent(QCloseEvent *event)
 {
+    process_Close();
+}
+
+void MainWindow::process_Close()
+{    
+    _settingsDialog->close();
+    _networkSettingsDialog->close();
     close();
 }
 
@@ -194,7 +213,6 @@ MainWindow::~MainWindow()
     delete _settingsDialog;
     delete m_ui;
 }
-
 
 
 void MainWindow::about()

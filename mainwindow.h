@@ -97,6 +97,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+    void closeEvent(QCloseEvent *event) override;
+
 private slots:
     void openSerialPort();
     void closeSerialPort();

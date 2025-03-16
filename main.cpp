@@ -65,10 +65,8 @@ int main(int argc, char *argv[])
     MainWindow w;
     bool localEcho;
 
-    QString fn = FileNameHelper::serialSettingsFilePath();
-    _globals._serialManager.loadSettings(fn,&localEcho);
-    QString fn2 = FileNameHelper::networkSettingsFilePath();
-    _globals._networkManager.loadSettings(fn);
+    _globals._serialManager.loadSettings(FileNameHelper::serialSettingsFilePath(),&localEcho);
+    _globals._networkManager.loadSettings(FileNameHelper::networkSettingsFilePath());
 
     w.setLocalEcho(localEcho);
     //w.setStatusBarText(sysInfo);
