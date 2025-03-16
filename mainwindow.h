@@ -136,6 +136,7 @@ private:
     void initActionsConnections();
     //void showStatusMessage(const QString &message);
 
+    void appendLog(const QString &txt);
 private:
     Ui::MainWindow *m_ui = nullptr;
     QLabel *m_status = nullptr;

@@ -64,6 +64,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QMessageBox>
+#include <QScrollBar>
 
 #include "infrastructure/globals.h"
 #include <helpers/filenamehelper.h>
@@ -83,9 +84,28 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->setupUi(this);
     m_ui->mainToolBar->setIconSize(QSize(48, 48));
 
-    _console = new Console(this);
+    _console = new Console(this);    
     _console->setEnabled(true);
-    setCentralWidget(_console);
+
+    QPalette p = m_ui->plainTextEdit_log->palette();
+    p.setColor(QPalette::Base, Qt::black);
+    p.setColor(QPalette::Text, Qt::green);
+    m_ui->plainTextEdit_log->setPalette(p);
+
+
+    auto serialIx = m_ui->tabWidget->indexOf(m_ui->tab_serial);
+    auto logIx = m_ui->tabWidget->indexOf(m_ui->tab_log);
+    m_ui->tabWidget->setTabText(serialIx, "Console");
+    m_ui->tabWidget->setTabText(logIx, "Log");
+
+    //setCentralWidget(_console);
+
+    //  QWidget *newTab = new QWidget();
+    // QVBoxLayout *layout = new QVBoxLayout(newTab);
+    //  layout->addWidget(label);
+
+    m_ui->tab_serial->layout()->addWidget(_console);
+
 
     //_console->setLayout(m_ui->tab_serial->layout());
     //_console->show();
@@ -142,16 +162,15 @@ void MainWindow::initActionsConnections()
 }
 
 void MainWindow::process_ActionConfigure()
-{
-    //_console->appendText("many many");
-
+{    
     SetSettingsDialog_Serial();
     _settingsDialog->show();
 }
 
 void MainWindow::process_ActionClear()
 {
-    _console->clear();
+    m_ui->plainTextEdit_log->clear();
+    //_console->clear();
     clear();
 }
 
@@ -283,6 +302,24 @@ void MainWindow::saveSession()
     _globals._sessionLog.saveSession(fn, stxt);
 }
 
+void MainWindow::appendLog(const QString &txt){
+    QPlainTextEdit *p = m_ui->plainTextEdit_log;
+
+    QTextCursor cur = p->textCursor();
+    cur.movePosition(QTextCursor::PreviousCharacter,QTextCursor::KeepAnchor,2);
+    QString a= cur.selectedText();
+    if(!a.isEmpty() && !a.endsWith('\n')) p->insertPlainText("\n");
+
+    QTextCharFormat tf;
+    tf = p->currentCharFormat();
+    tf.setForeground(SerialData::commentBrush);
+    p->setCurrentCharFormat(tf);
+
+    p->insertPlainText(txt);
+    QScrollBar *bar = p->verticalScrollBar();
+    bar->setValue(bar->maximum());
+}
+
 void MainWindow::loadSession()
 {
     QString fd = FileNameHelper::terminalDirPath();
@@ -290,8 +327,9 @@ void MainWindow::loadSession()
     if(fn.isEmpty()) return;
 
     QString stxt = _globals._sessionLog.loadSession(fn);
-    _console->clear();
-    _console->appendText(stxt);
+
+    m_ui->plainTextEdit_log->clear();
+    appendLog(stxt);
 }
 
 void MainWindow::setStatusBarText(const QString &v)

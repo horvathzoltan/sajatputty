@@ -89,7 +89,6 @@ void Console::appendText(const QString &txt)
     appendText_private(txt);
 }
 
-
 void Console::appendData(const SerialData &data)
 {
     QString txt = QString::fromLocal8Bit(data.data());

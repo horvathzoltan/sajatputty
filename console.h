@@ -69,6 +69,8 @@ public:
     void appendData(const SerialData& d);
     void setLocalEchoEnabled(bool set);
 
+    //static QString appendText2(QPlainTextEdit *p, const QString &txt);
+
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
