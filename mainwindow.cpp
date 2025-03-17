@@ -418,9 +418,8 @@ void MainWindow::openSerialPort(){
         //showStatusMessage("Connected:"+msg);
         _console->appendText("connected:"+msg);
 
-        NetworkSettingsVM s = _globals._networkManager.getSettings();
-        LogMode logMode = _globals._networkManager.logMode();
-        _globals._tcpSender.Init(s.serverIp, s.serverPort, logMode);
+        NetworkSettingsVM s = _globals._networkManager.getSettings();        
+        _globals._tcpSender.Init(s.serverIp, s.serverPort);
     }
     else
     {
@@ -470,7 +469,7 @@ void MainWindow::writeData_console(const QByteArray &data)
     ChanelMode chanelMode = _globals._networkManager.chanelMode();
     if(chanelMode == ChanelMode::TX || chanelMode == ChanelMode::RXTX)
     {
-        _globals._tcpSender.send(d);
+        _globals._tcpSender.send(d, _globals._networkManager.logMode(),_globals._networkManager.deviceTag());
     }
 }
 
@@ -490,6 +489,7 @@ void MainWindow::readData_serial()
     ChanelMode chanelMode = _globals._networkManager.chanelMode();
     if(chanelMode == ChanelMode::RX || chanelMode == ChanelMode::RXTX)
     {
-        _globals._tcpSender.send(d);
+
+        _globals._tcpSender.send(d,_globals._networkManager.logMode(), _globals._networkManager.deviceTag());
     }
 }

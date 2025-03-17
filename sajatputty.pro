@@ -58,6 +58,7 @@ HEADERS += \
     infrastructure/serialdata.h \
     infrastructure/serialmanager.h \
     infrastructure/tcpsender.h \
+    infrastructure/threadsafearray.h \
     mainwindow.h \
     session.h \
     settingsdialog.h \

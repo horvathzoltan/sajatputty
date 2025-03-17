@@ -19,7 +19,6 @@ QBrush SerialData::brush() const
 {
     static QBrush yellow = QBrush((Qt::GlobalColor)Qt::yellow);
     static QBrush green = QBrush((Qt::GlobalColor)Qt::green);
-
     static QBrush gray = QBrush((Qt::GlobalColor)Qt::gray);
 
     if(_type == TX) return yellow;

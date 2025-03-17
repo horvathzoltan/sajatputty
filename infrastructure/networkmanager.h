@@ -15,6 +15,7 @@ private:
 
 public:
     LogMode logMode(){return _logMode;}
+    QString deviceTag(){return _tag;}
     ChanelMode chanelMode(){return _chanelMode;}
 
     void saveSettings(const QString& _settingsFn);
