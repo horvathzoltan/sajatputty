@@ -13,7 +13,9 @@
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -39,6 +41,12 @@ public:
     QAction *actionSaveSettings_Network;
     QWidget *centralWidget;
     QVBoxLayout *verticalLayout;
+    QTabWidget *tabWidget;
+    QWidget *tab_serial;
+    QVBoxLayout *verticalLayout_2;
+    QWidget *tab_log;
+    QVBoxLayout *verticalLayout_3;
+    QPlainTextEdit *plainTextEdit_log;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
@@ -113,6 +121,31 @@ public:
         verticalLayout->setSpacing(6);
         verticalLayout->setContentsMargins(11, 11, 11, 11);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        tabWidget = new QTabWidget(centralWidget);
+        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        tab_serial = new QWidget();
+        tab_serial->setObjectName(QString::fromUtf8("tab_serial"));
+        verticalLayout_2 = new QVBoxLayout(tab_serial);
+        verticalLayout_2->setSpacing(6);
+        verticalLayout_2->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        tabWidget->addTab(tab_serial, QString());
+        tab_log = new QWidget();
+        tab_log->setObjectName(QString::fromUtf8("tab_log"));
+        verticalLayout_3 = new QVBoxLayout(tab_log);
+        verticalLayout_3->setSpacing(6);
+        verticalLayout_3->setContentsMargins(11, 11, 11, 11);
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        plainTextEdit_log = new QPlainTextEdit(tab_log);
+        plainTextEdit_log->setObjectName(QString::fromUtf8("plainTextEdit_log"));
+        plainTextEdit_log->setTextInteractionFlags(Qt::NoTextInteraction);
+
+        verticalLayout_3->addWidget(plainTextEdit_log);
+
+        tabWidget->addTab(tab_log, QString());
+
+        verticalLayout->addWidget(tabWidget);
+
         MainWindow->setCentralWidget(centralWidget);
         mainToolBar = new QToolBar(MainWindow);
         mainToolBar->setObjectName(QString::fromUtf8("mainToolBar"));
@@ -137,6 +170,9 @@ public:
         mainToolBar->addAction(actionSaveSession);
 
         retranslateUi(MainWindow);
+
+        tabWidget->setCurrentIndex(1);
+
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -215,6 +251,8 @@ public:
 #if QT_CONFIG(tooltip)
         actionSaveSettings_Network->setToolTip(QCoreApplication::translate("MainWindow", "Save network settings", nullptr));
 #endif // QT_CONFIG(tooltip)
+        tabWidget->setTabText(tabWidget->indexOf(tab_serial), QCoreApplication::translate("MainWindow", "Tab 1", nullptr));
+        tabWidget->setTabText(tabWidget->indexOf(tab_log), QCoreApplication::translate("MainWindow", "Tab 2", nullptr));
     } // retranslateUi
 
 };

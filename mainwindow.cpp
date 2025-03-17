@@ -98,6 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->tabWidget->setTabText(serialIx, "Console");
     m_ui->tabWidget->setTabText(logIx, "Log");
 
+    m_ui->tabWidget->setCurrentIndex(serialIx);
     //setCentralWidget(_console);
 
     //  QWidget *newTab = new QWidget();
@@ -177,6 +178,7 @@ void MainWindow::process_ActionClear()
 void MainWindow::process_OpenSerialPort()
 {
     openSerialPort();
+
 }
 
 void MainWindow::process_CloseSerialPort()
@@ -426,6 +428,10 @@ void MainWindow::openSerialPort(){
         //showStatusMessage(tr("Open error"));
     }
     _globals._sessionLog.clear();
+
+    //int serialIx = m_ui->tabWidget->indexOf(m_ui->tab_serial);
+    m_ui->tabWidget->setCurrentWidget(m_ui->tab_serial);
+    _console->setFocus();
 }
 // a serialsettingshelper beolvassa fájlból a m_serial-ba
 
